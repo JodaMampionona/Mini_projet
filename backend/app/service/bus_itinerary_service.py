@@ -14,8 +14,9 @@ class BusItineraryService:
 
         links = self.linkRepo.get_links_ordered_by_bus()
 
-        # Création Graphe
+        # Création Graphe et itinéraire
         G = nx.Graph()
+        itinerary = {}
 
         # Organiser arrêts par bus
         arrets_par_bus = {}
@@ -52,13 +53,13 @@ class BusItineraryService:
                 if bus != bus_actuel:
                     # Si ce n'est pas le premier segment, afficher le précédent
                     if bus_actuel is not None:
-                        print(
-                            f"Prendre le bus {bus_actuel} de {debut_segment} → {chemin[i]}")
+                        itinerary[bus_actuel] = (debut_segment, chemin[i])
                     # Nouveau segment
                     bus_actuel = bus
                     debut_segment = chemin[i]
             # Afficher le dernier segment
-            print(
-                f"Prendre le bus {bus_actuel} de {debut_segment} → {destination}")
+            itinerary[bus_actuel] = (debut_segment, chemin[i])
         except nx.NetworkXNoPath:
-            print("Aucun chemin trouvé entre ces deux arrêts.")
+            print('aucun chemin trouvé')
+        finally:
+            return itinerary
