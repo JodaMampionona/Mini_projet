@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class BusEntity:
+class Bus:
     name: str
     id: int = None

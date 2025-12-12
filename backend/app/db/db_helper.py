@@ -2,8 +2,6 @@ import os
 import psycopg2
 from pathlib import Path
 from dotenv import load_dotenv
-from app.entities.bus_entity import BusEntity
-
 
 env_path = Path(__file__).resolve().parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)

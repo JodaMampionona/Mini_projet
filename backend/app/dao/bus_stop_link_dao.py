@@ -1,8 +1,8 @@
 from app.dao.DAO_interface import DAOInterface
 from app.db.db_helper import DBHelper
-from app.entities.bus_entity import BusEntity
-from app.entities.bus_stop_entity import BusStopEntity
-from app.entities.bus_stop_link_entity import BusStopLinkEntity
+from app.model.bus_model import Bus
+from app.model.bus_stop_model import BusStop
+from app.model.bus_stop_link_model import BusStopLink
 
 
 class BusStopLinkDAO(DAOInterface):
@@ -19,9 +19,9 @@ class BusStopLinkDAO(DAOInterface):
             """)
             rows = cursor.fetchall()
             return [
-                BusStopLinkEntity(
-                    bus=BusEntity(id=row[0], name=row[1]),
-                    stop=BusStopEntity(
+                BusStopLink(
+                    bus=Bus(id=row[0], name=row[1]),
+                    stop=BusStop(
                         id=row[2], name=row[3], lat=row[4], lon=row[5]),
                     rank=row[6]
                 )
@@ -39,10 +39,10 @@ class BusStopLinkDAO(DAOInterface):
             """)
             rows = cursor.fetchall()
             return [
-                BusStopLinkEntity(
-                    stop=BusStopEntity(
+                BusStopLink(
+                    stop=BusStop(
                         id=row[0], name=row[1], lat=row[2], lon=row[3]),
-                    bus=BusEntity(id=row[4], name=row[5]),
+                    bus=Bus(id=row[4], name=row[5]),
                     rank=row[6]
                 )
                 for row in rows
@@ -58,15 +58,15 @@ class BusStopLinkDAO(DAOInterface):
                 WHERE bsl.id=%s;
             """, (bus_stop_link_id,))
             row = cursor.fetchone()
-            return BusStopLinkEntity(
-                bus=BusEntity(id=row[0], name=row[1]),
-                stop=BusStopEntity(
+            return BusStopLink(
+                bus=Bus(id=row[0], name=row[1]),
+                stop=BusStop(
                     id=row[2], name=row[3], lat=row[4], lon=row[5]),
                 rank=row[6]
             ) if row else None
 
     # TODO: do not insert ID
-    def add(self, link: BusStopLinkEntity):
+    def add(self, link: BusStopLink):
         conn = self.helper.get_connection()
         with conn.cursor() as cursor:
             cursor.execute(
@@ -76,7 +76,7 @@ class BusStopLinkDAO(DAOInterface):
         conn.commit()
         return link
 
-    def update(self, link: BusStopLinkEntity):
+    def update(self, link: BusStopLink):
         conn = self.helper.get_connection()
         with conn.cursor() as cursor:
             cursor.execute(

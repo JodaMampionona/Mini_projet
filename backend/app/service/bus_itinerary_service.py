@@ -1,18 +1,18 @@
 import psycopg2
 import networkx as nx
-from app.dao.bus_stop_link_dao import BusStopLinkDAO
+from app.repository.bus_stop_link_repository import BusStopLinkRepository
 
 
 class BusItineraryService:
     def __init__(self):
-        self.linkDAO = BusStopLinkDAO()
+        self.linkRepo = BusStopLinkRepository()
 
     # TODO : les graph_edges par id au lieu de par nom
     # TODO : retourner au lieu d'afficher
 
     def get_bus_itinerary(self, start: str, destination: str):
 
-        links = self.linkDAO.get_links_ordered_by_bus()
+        links = self.linkRepo.get_links_ordered_by_bus()
 
         # Création Graphe
         G = nx.Graph()

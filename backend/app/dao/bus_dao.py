@@ -1,6 +1,6 @@
 from app.dao.DAO_interface import DAOInterface
 from app.db.db_helper import DBHelper
-from app.entities.bus_entity import BusEntity
+from app.model.bus_model import Bus
 
 
 class BusDAO(DAOInterface):
@@ -11,17 +11,17 @@ class BusDAO(DAOInterface):
         with self.helper.get_connection().cursor() as cursor:
             cursor.execute("SELECT id, name FROM buses;")
             rows = cursor.fetchall()
-            return [BusEntity(id=row[0], name=row[1]) for row in rows]
+            return [Bus(id=row[0], name=row[1]) for row in rows]
 
     def get_by_id(self, bus_id: int):
         with self.helper.get_connection().cursor() as cursor:
             cursor.execute(
                 "SELECT id, name FROM buses WHERE id=%s;", (bus_id,))
             row = cursor.fetchone()
-            return BusEntity(id=row[0], name=row[1]) if row else None
+            return Bus(id=row[0], name=row[1]) if row else None
 
     # TODO: do not insert ID
-    def add(self, bus: BusEntity):
+    def add(self, bus: Bus):
         conn = self.helper.get_connection()
         with conn.cursor() as cursor:
             cursor.execute(
@@ -32,7 +32,7 @@ class BusDAO(DAOInterface):
         conn.commit()
         return bus
 
-    def update(self, bus: BusEntity):
+    def update(self, bus: Bus):
         conn = self.helper.get_connection()
         with conn.cursor() as cursor:
             cursor.execute(

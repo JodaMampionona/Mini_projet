@@ -1,6 +1,6 @@
 from app.dao.DAO_interface import DAOInterface
 from app.db.db_helper import DBHelper
-from app.entities.bus_stop_entity import BusStopEntity
+from app.model.bus_stop_model import BusStop
 
 
 class BusStopDAO(DAOInterface):
@@ -11,17 +11,17 @@ class BusStopDAO(DAOInterface):
         with self.helper.get_connection().cursor() as cursor:
             cursor.execute("SELECT id, name, lat, lon FROM bus_stops;")
             rows = cursor.fetchall()
-            return [BusStopEntity(id=row[0], name=row[1], lat=row[2], lon=row[3]) for row in rows]
+            return [BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) for row in rows]
 
     def get_by_id(self, stop_id: int):
         with self.helper.get_connection().cursor() as cursor:
             cursor.execute(
                 "SELECT id, name, lat, lon FROM bus_stops WHERE id=%s;", (stop_id,))
             row = cursor.fetchone()
-            return BusStopEntity(id=row[0], name=row[1], lat=row[2], lon=row[3]) if row else None
+            return BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) if row else None
 
     # TODO: do not insert ID
-    def add(self, stop: BusStopEntity):
+    def add(self, stop: BusStop):
         conn = self.helper.get_connection()
         with conn.cursor() as cursor:
             cursor.execute(
@@ -32,7 +32,7 @@ class BusStopDAO(DAOInterface):
         conn.commit()
         return stop
 
-    def update(self, stop: BusStopEntity):
+    def update(self, stop: BusStop):
         conn = self.helper.get_connection()
         with conn.cursor() as cursor:
             cursor.execute(

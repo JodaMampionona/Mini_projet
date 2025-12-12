@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-
 @dataclass
-class BusStopEntity:
+class BusStop:
     name: str
     lat: float
     lon: float
