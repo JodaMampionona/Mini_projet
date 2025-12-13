@@ -6,6 +6,5 @@ service = BusItineraryService()
 
 
 @router.get("/")
-def get_bus_itinerary(start: str, destination: str):
-    itinerary = service.get_bus_itinerary(start, destination)
-    return {"itinerary": itinerary}
+def get_bus_itinerary(start_id: int, destination_id: int):
+    return service.get_bus_itinerary(start_id, destination_id)

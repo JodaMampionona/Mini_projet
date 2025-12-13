@@ -20,6 +20,16 @@ class BusStopDAO(DAOInterface):
             row = cursor.fetchone()
             return BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) if row else None
 
+    def get_by_ids(self, ids: list):
+        if len(ids) == 0:
+            return []
+        with self.helper.get_connection().cursor() as cursor:
+            format_strings = ','.join(['%s'] * len(ids))
+            cursor.execute(
+                f"SELECT id, name, lat, lon FROM bus_stops WHERE id IN ({format_strings});", tuple(ids))
+            rows = cursor.fetchall()
+            return [BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) for row in rows]
+
     # TODO: do not insert ID
     def add(self, stop: BusStop):
         conn = self.helper.get_connection()

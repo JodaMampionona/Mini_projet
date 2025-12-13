@@ -10,6 +10,8 @@ class BusRepository:
 
     def get_by_id(self, bus_id: int): return self.dao.get_by_id(bus_id)
 
+    def get_by_ids(self, ids: list): return self.dao.get_by_ids(ids)
+
     def add(self, bus: Bus): return self.dao.add(bus)
 
     def update(self, bus: Bus): return self.dao.update(bus)

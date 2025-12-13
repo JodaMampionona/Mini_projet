@@ -20,6 +20,16 @@ class BusDAO(DAOInterface):
             row = cursor.fetchone()
             return Bus(id=row[0], name=row[1]) if row else None
 
+    def get_by_ids(self, ids: list):
+        if len(ids) == 0:
+            return []
+        with self.helper.get_connection().cursor() as cursor:
+            format_strings = ','.join(['%s'] * len(ids))
+            cursor.execute(
+                f"SELECT id, name FROM buses WHERE id IN ({format_strings});", tuple(ids))
+            rows = cursor.fetchall()
+            return [Bus(id=row[0], name=row[1]) for row in rows]
+
     # TODO: do not insert ID
     def add(self, bus: Bus):
         conn = self.helper.get_connection()

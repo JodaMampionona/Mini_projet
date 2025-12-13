@@ -28,7 +28,7 @@ class BusStopLinkDAO(DAOInterface):
                 for row in rows
             ]
 
-    def get_links_ordered_by_bus(self):
+    def get_links_ordered_by_rank(self):
         with self.helper.get_connection().cursor() as cursor:
             cursor.execute("""
                 SELECT s.id, s.name, s.lat, s.lon, b.id, b.name, links.rank
@@ -58,6 +58,26 @@ class BusStopLinkDAO(DAOInterface):
                 WHERE bsl.id=%s;
             """, (bus_stop_link_id,))
             row = cursor.fetchone()
+            return BusStopLink(
+                bus=Bus(id=row[0], name=row[1]),
+                stop=BusStop(
+                    id=row[2], name=row[3], lat=row[4], lon=row[5]),
+                rank=row[6]
+            ) if row else None
+
+    def get_by_ids(self, ids: list):
+        if len(ids) == 0:
+            return []
+        with self.helper.get_connection().cursor() as cursor:
+            format_strings = ','.join(['%s'] * len(ids))
+            cursor.execute("""
+                SELECT b.id, b.name, s.id, s.name, s.lat, s.lon, bsl.rank
+                FROM bus_stop_links bsl
+                JOIN buses b ON bsl.bus_id = b.id
+                JOIN stops s ON bsl.stop_id = s.id
+                WHERE bsl.id IN ({format_strings});
+            """, (tuple(ids),))
+            rows = cursor.fetchall()
             return BusStopLink(
                 bus=Bus(id=row[0], name=row[1]),
                 stop=BusStop(

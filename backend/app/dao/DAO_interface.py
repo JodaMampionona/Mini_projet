@@ -8,6 +8,10 @@ class DAOInterface(ABC):
         pass
 
     @abstractmethod
+    def get_by_ids(self, ids: list):
+        pass
+
+    @abstractmethod
     def get_all(self):
         pass
 
