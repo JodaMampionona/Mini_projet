@@ -1,0 +1,6 @@
+fonts: manrope (title), sora (body)
+
+colors :
+
+#F7C945 (jaune)
+#FFFFFF (blanc)
