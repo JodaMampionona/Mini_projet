@@ -15,7 +15,7 @@ class BusStopLinkDAO(DAOInterface):
                 SELECT b.id, b.name, s.id, s.name, s.lat, s.lon, bsl.rank
                 FROM bus_stop_links bsl
                 JOIN buses b ON bsl.bus_id = b.id
-                JOIN stops s ON bsl.stop_id = s.id;
+                JOIN bus_stops s ON bsl.stop_id = s.id;
             """)
             rows = cursor.fetchall()
             return [
@@ -54,7 +54,7 @@ class BusStopLinkDAO(DAOInterface):
                 SELECT b.id, b.name, s.id, s.name, s.lat, s.lon, bsl.rank
                 FROM bus_stop_links bsl
                 JOIN buses b ON bsl.bus_id = b.id
-                JOIN stops s ON bsl.stop_id = s.id
+                JOIN bus_stops s ON bsl.stop_id = s.id
                 WHERE bsl.id=%s;
             """, (bus_stop_link_id,))
             row = cursor.fetchone()
@@ -74,7 +74,7 @@ class BusStopLinkDAO(DAOInterface):
                 SELECT b.id, b.name, s.id, s.name, s.lat, s.lon, bsl.rank
                 FROM bus_stop_links bsl
                 JOIN buses b ON bsl.bus_id = b.id
-                JOIN stops s ON bsl.stop_id = s.id
+                JOIN bus_stops s ON bsl.stop_id = s.id
                 WHERE bsl.id IN ({format_strings});
             """, (tuple(ids),))
             rows = cursor.fetchall()
