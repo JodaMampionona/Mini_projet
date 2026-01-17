@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
           ).textTheme.bodyMedium?.copyWith(color: AppColors.placeholder),
         ),
 
-        // curseur
+        // cursor
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: AppColors.textMain,
           selectionColor: AppColors.textSelection,

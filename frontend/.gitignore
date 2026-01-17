@@ -46,3 +46,4 @@ app.*.map.json
 
 # perso
 /lib/not_important/
+.env

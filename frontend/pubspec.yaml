@@ -40,6 +40,8 @@ dependencies:
   flutter_svg: ^2.2.3
   google_fonts: ^6.3.3
   go_router: ^17.0.1
+  dotenv: ^4.2.0
+  google_maps_flutter: ^2.14.0
 
 dev_dependencies:
   flutter_test:
