@@ -4,8 +4,8 @@ import 'package:frontend/model/bus_stop_model.dart';
 class HomeViewModel extends ChangeNotifier {
   final model = BusStopModel();
   bool loading = true;
-  int startId = -1;
-  int destId = -1;
+  BusStop? start;
+  BusStop? destination;
 
   final TextEditingController startController = TextEditingController();
   final TextEditingController destController = TextEditingController();
@@ -19,9 +19,9 @@ class HomeViewModel extends ChangeNotifier {
     destController.text = startValue;
 
     // swap id values
-    var tmp = startId;
-    startId = destId;
-    destId = tmp;
+    var tmp = start;
+    start = destination;
+    destination = tmp;
     notifyListeners();
   }
 
@@ -36,20 +36,27 @@ class HomeViewModel extends ChangeNotifier {
     });
   }
 
-  void updateIds(int start, int dest, String name) {
-    startId = start;
-    destId = dest;
+  void updateBusStops(BusStop startPoint, BusStop destPoint, String name) {
+    start = startPoint;
+    destination = destPoint;
   }
 
   void updateStartController(BusStop stop) {
     startController.text = stop.name;
-    startId = stop.id;
+    start = stop;
     notifyListeners();
   }
 
   void updateDestController(BusStop stop) {
     destController.text = stop.name;
-    destId = stop.id;
+    destination = stop;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    startController.dispose();
+    destController.dispose();
+    super.dispose();
   }
 }

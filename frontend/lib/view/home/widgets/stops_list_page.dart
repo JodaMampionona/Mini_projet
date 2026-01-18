@@ -45,12 +45,16 @@ class _StopsListPageState extends State<StopsListPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 16,
             children: [
-              Icon(Icons.directions_bus, color: AppColors.accentDark, size: 24),
+              Icon(
+                Icons.directions_bus,
+                color: AppColors.secondaryMain,
+                size: 24,
+              ),
               Expanded(
                 child: Text(
                   bus,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.accentDark,
+                    color: AppColors.secondaryMain,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -64,14 +68,14 @@ class _StopsListPageState extends State<StopsListPage> {
       for (var stop in stops) {
         listItems.add(
           ListTile(
-            tileColor: AppColors.listTileBackground,
+            tileColor: AppColors.componentBg,
             contentPadding: EdgeInsets.symmetric(horizontal: 16),
             title: Text(stop.name),
             subtitle: Text(
               stop.bus,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.placeholder),
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.grey50),
             ),
             onTap: () => widget.onStopTap(stop),
           ),
@@ -79,37 +83,45 @@ class _StopsListPageState extends State<StopsListPage> {
       }
     });
 
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 50, bottom: 20),
-          color: AppColors.accentDark,
-          child: SearchBar(
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Icon(Icons.search, color: AppColors.placeholder),
-            ),
-            hintText: widget.inputPlaceholder,
-            onChanged: (value) {
-              setState(() {
-                filteredStops = widget.stops
-                    .where(
-                      (stop) =>
-                          stop.name.toLowerCase().contains(value.toLowerCase()),
-                    )
-                    .toList();
-              });
-            },
-          ),
-        ),
-        Expanded(
-          child: ListView.separated(
-            separatorBuilder: (_, _) => const SizedBox(height: 4),
-            itemCount: listItems.length,
-            itemBuilder: (_, index) => listItems[index],
-          ),
-        ),
-      ],
-    );
+    return widget.stops.isEmpty
+        ? Center(child: Text('Aucun arrêt disponible pour le moment.'))
+        : Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 50,
+                  bottom: 20,
+                ),
+                color: AppColors.secondaryMain,
+                child: SearchBar(
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Icon(Icons.search, color: AppColors.grey50),
+                  ),
+                  hintText: widget.inputPlaceholder,
+                  onChanged: (value) {
+                    setState(() {
+                      filteredStops = widget.stops
+                          .where(
+                            (stop) => stop.name.toLowerCase().contains(
+                              value.toLowerCase(),
+                            ),
+                          )
+                          .toList();
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: ListView.separated(
+                  separatorBuilder: (_, _) => const SizedBox(height: 4),
+                  itemCount: listItems.length,
+                  itemBuilder: (_, index) => listItems[index],
+                ),
+              ),
+            ],
+          );
   }
 }

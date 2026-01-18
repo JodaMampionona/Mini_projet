@@ -2,6 +2,7 @@ import networkx as nx
 from app.repository.bus_stop_link_repository import BusStopLinkRepository
 from app.repository.bus_stop_repository import BusStopRepository
 from app.repository.bus_repository import BusRepository
+from app.model.bus_stop_model import BusStop
 
 
 class BusItineraryService:
@@ -43,7 +44,9 @@ class BusItineraryService:
             {
                 'bus': 'D Ambohidratrimo', 
                 'from': 'Terminus D Ambohidratrimo', 
-                'to': 'Imerinafovoany'
+                'to': 'Imerinafovoany',
+                'lat': -18.879123,
+                lon: 47.531234
             },
             ...
         ]
@@ -71,7 +74,8 @@ class BusItineraryService:
                 id_bus = self.graph[chemin[i]][chemin[i + 1]]['id_bus']
                 if id_bus != bus_actuel:
                     if bus_actuel is not None:
-                        itinerary.append((bus_actuel, debut_segment, chemin[i]))
+                        itinerary.append(
+                            (bus_actuel, debut_segment, chemin[i]))
                     bus_actuel = id_bus
                     debut_segment = chemin[i]
 
@@ -88,13 +92,16 @@ class BusItineraryService:
             stops = self.stopRepo.get_by_ids(list(stop_ids))
 
             bus_map = {bus.id: bus.name for bus in buses}
-            stop_map = {stop.id: stop.name for stop in stops}
+            stop_map = {stop.id: BusStop(
+                id=stop.id, name=stop.name, lat=stop.lat, lon=stop.lon) for stop in stops}
 
             for bus_id, start_id, end_id in itinerary:
                 itinerary_named.append({
                     "bus": bus_map[bus_id],
-                    "from": stop_map[start_id],
-                    "to": stop_map[end_id]
+                    "from": stop_map[start_id].name,
+                    "to": stop_map[end_id].name,
+                    "lat": stop_map[start_id].lat,
+                    "lon": stop_map[start_id].lon
                 })
 
             return itinerary_named

@@ -25,10 +25,11 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HomeViewModel>().fetchStopsWithBuses();
-    });
     super.initState();
+    final vm = context.read<HomeViewModel>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      vm.fetchStopsWithBuses();
+    });
   }
 
   @override
@@ -45,13 +46,13 @@ class _HomeViewState extends State<HomeView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: AppColors.accentMain),
+                  CircularProgressIndicator(color: AppColors.primaryMain),
                   SizedBox(height: 16),
                   Text(
                     'Chargement en cours...',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.placeholder,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: AppColors.grey50),
                   ),
                 ],
               ),
@@ -64,9 +65,9 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   Text(
                     'Vérifiez votre connexion internet.',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: AppColors.textMain),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.secondaryShade100,
+                    ),
                   ),
                   SizedBox(height: 12),
                   ElevatedButton(
@@ -99,6 +100,7 @@ class _HomeViewState extends State<HomeView> {
                       child: Align(
                         alignment: Alignment.center,
                         child: CardForm(
+                          vm: viewModel,
                           formKey: _formKey,
                           onSearchItineraryPress: (context) =>
                               widget.onSearchItineraryPress(context, viewModel),
@@ -133,7 +135,6 @@ class _HomeViewState extends State<HomeView> {
                               viewModel.updateDestController(selectedStop);
                             }
                           },
-                          vm: viewModel,
                         ),
                       ),
                     ),
@@ -150,7 +151,7 @@ class _HomeViewState extends State<HomeView> {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.lightBg,
+      backgroundColor: AppColors.primaryTint100,
       builder: (context) => FractionallySizedBox(heightFactor: 1, child: page),
     );
   }

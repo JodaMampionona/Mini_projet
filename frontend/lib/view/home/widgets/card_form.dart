@@ -46,7 +46,7 @@ class CardForm extends StatelessWidget {
                 icon: Icon(
                   Icons.check_circle,
                   size: 22,
-                  color: AppColors.accentDark,
+                  color: AppColors.secondaryMain,
                 ),
                 label: 'Point de départ',
                 placeholder: 'Talatamaty',
@@ -57,7 +57,7 @@ class CardForm extends StatelessWidget {
               // swap
               Row(
                 children: [
-                  Expanded(child: Divider(color: AppColors.inputBackground)),
+                  Expanded(child: Divider(color: AppColors.grey95)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: IconButton(
@@ -65,15 +65,15 @@ class CardForm extends StatelessWidget {
                       icon: Icon(Icons.swap_vert),
                       style: ButtonStyle(
                         foregroundColor: WidgetStatePropertyAll(
-                          AppColors.lightBg,
+                          AppColors.primaryTint100,
                         ),
                         backgroundColor: WidgetStatePropertyAll(
-                          AppColors.accentDark,
+                          AppColors.secondaryMain,
                         ),
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: AppColors.inputBackground)),
+                  Expanded(child: Divider(color: AppColors.grey95)),
                 ],
               ),
 
@@ -88,7 +88,7 @@ class CardForm extends StatelessWidget {
                   }
                   return null;
                 },
-                icon: Icon(Icons.location_on, color: AppColors.accentDark),
+                icon: Icon(Icons.location_on, color: AppColors.secondaryMain),
                 label: 'Destination',
                 placeholder: 'Andranomena',
               ),
@@ -101,9 +101,9 @@ class CardForm extends StatelessWidget {
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(
-                      AppColors.accentMain,
+                      AppColors.primaryMain,
                     ),
-                    foregroundColor: WidgetStatePropertyAll(AppColors.textMain),
+                    foregroundColor: WidgetStatePropertyAll(AppColors.secondaryShade100),
                   ),
                   onPressed: () {
                     if (!formKey.currentState!.validate()) return;

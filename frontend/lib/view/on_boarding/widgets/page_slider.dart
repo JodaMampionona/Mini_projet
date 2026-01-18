@@ -54,7 +54,7 @@ class _PageSliderState extends State<PageSlider> {
               height: 6,
               decoration: BoxDecoration(
                 color: _currentIndex == index
-                    ? AppColors.accentSecondary
+                    ? AppColors.secondaryTint100
                     : Colors.grey,
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -90,11 +90,11 @@ class _PageSliderState extends State<PageSlider> {
                     onPressed: () => _nextPage(context),
                     style: ButtonStyle(
                       foregroundColor: _currentIndex == widget.pages.length - 1
-                          ? WidgetStatePropertyAll(AppColors.textMain)
-                          : WidgetStatePropertyAll(AppColors.lightBg),
+                          ? WidgetStatePropertyAll(AppColors.secondaryShade100)
+                          : WidgetStatePropertyAll(AppColors.primaryTint100),
                       backgroundColor: _currentIndex == widget.pages.length - 1
-                          ? WidgetStatePropertyAll(AppColors.accentMain)
-                          : WidgetStatePropertyAll(AppColors.accentDark),
+                          ? WidgetStatePropertyAll(AppColors.primaryMain)
+                          : WidgetStatePropertyAll(AppColors.secondaryMain),
                     ),
                     child: Text(
                       _currentIndex == widget.pages.length - 1
