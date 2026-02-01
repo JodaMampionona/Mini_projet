@@ -29,6 +29,7 @@ class AppColors {
   static const cardColor = Color(0xFFDDD6C3);
   static const componentBg = Color(0xFFFFFFFF);
 
-  // status
-  static const danger = Color(0xFFDC3545);
+  // error
+  static const errorBg = Color(0x66F65A3B);
+  static const errorText = Color(0xFF3B0C02);
 }

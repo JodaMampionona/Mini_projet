@@ -5,10 +5,12 @@ import 'package:frontend/model/place_model.dart';
 class SearchViewModel extends ChangeNotifier {
   final model = PlaceModel();
   List<Place> places = [];
+  Place? currentLocation;
+
+  String? errorMsg;
 
   bool loading = false;
-
-  String _lastQuery = '';
+  bool positionLoading = false;
 
   Timer? _debounce;
 
@@ -26,13 +28,29 @@ class SearchViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await model.fetchPlaces(query);
+      final result = await model.fetchPlacesByName(query);
       places = _uniqueByNameAndCity(result);
+      errorMsg = null;
     } catch (e) {
+      errorMsg = e.toString();
       places = [];
     } finally {
       loading = false;
-      print('places :: $places');
+      notifyListeners();
+    }
+  }
+
+  Future<void> getCurrentLocation() async {
+    try {
+      positionLoading = true;
+      errorMsg = null;
+      notifyListeners();
+      currentLocation = await model.getCurrentLocation();
+    } catch (e) {
+      errorMsg = e.toString();
+      notifyListeners();
+    } finally {
+      positionLoading = false;
       notifyListeners();
     }
   }
@@ -46,8 +64,6 @@ class SearchViewModel extends ChangeNotifier {
 
     _debounce = Timer(const Duration(milliseconds: 400), () {
       final query = placeController.text.trim();
-      if (query == _lastQuery) return;
-      _lastQuery = query;
       fetchPlaces(query);
     });
   }

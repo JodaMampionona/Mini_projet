@@ -46,26 +46,69 @@ class _SearchViewState extends State<SearchView> {
         body: ListView(
           padding: EdgeInsets.only(top: 16),
           children: [
-            // for geolocation
-            InkWell(
-              onTap: () => (),
-              child: Ink(
+            // error message
+            if (vm.errorMsg != null)
+              Container(
+                width: double.infinity,
+                alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                color: AppColors.componentBg,
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Icon(Icons.near_me, color: AppColors.primaryMain, size: 24),
-                    Text(
-                      'Utiliser ma position actuelle',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.primaryShade50,
-                      ),
-                    ),
-                  ],
+                color: AppColors.errorBg,
+                child: Text(
+                  vm.errorMsg!,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.errorText,
+                  ),
                 ),
               ),
-            ),
+            SizedBox(height: 16),
+
+            // for geolocation
+            vm.positionLoading
+                ? Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Center(
+                      child: Column(
+                        spacing: 8,
+                        children: [
+                          Text('Récupération de votre position...'),
+                          CircularProgressIndicator(
+                            color: AppColors.primaryMain,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : InkWell(
+                    onTap: () async {
+                      await vm.getCurrentLocation();
+                      if (vm.currentLocation != null) {
+                        widget.onPlaceTap(vm.currentLocation!);
+                      }
+                    },
+                    child: Ink(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      color: AppColors.componentBg,
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          Icon(
+                            Icons.near_me,
+                            color: AppColors.primaryMain,
+                            size: 24,
+                          ),
+                          Text(
+                            'Utiliser ma position actuelle',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.primaryShade50,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
             // list of results
             Padding(

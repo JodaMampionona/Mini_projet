@@ -67,11 +67,11 @@ class MyApp extends StatelessWidget {
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(24),
-            borderSide: const BorderSide(color: AppColors.danger, width: 1),
+            borderSide: const BorderSide(color: AppColors.errorBg, width: 1),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(24),
-            borderSide: const BorderSide(color: AppColors.danger, width: 1),
+            borderSide: const BorderSide(color: AppColors.errorBg, width: 1),
           ),
           hintStyle: Theme.of(
             context,
