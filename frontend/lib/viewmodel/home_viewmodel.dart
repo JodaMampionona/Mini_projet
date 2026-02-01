@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/model/bus_stop_model.dart';
+import 'package:frontend/model/place_model.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  final model = BusStopModel();
+  final model = PlaceModel();
   bool loading = true;
-  BusStop? start;
-  BusStop? destination;
+  Place? start;
+  Place? destination;
 
   final TextEditingController startController = TextEditingController();
   final TextEditingController destController = TextEditingController();
 
-  List<BusStop> get busStops => model.busStops;
+  List<Place> get foundPlaces => model.places;
 
   void swapStartAndDestination() {
     // swap controller values
@@ -25,31 +25,15 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchStopsWithBuses() {
-    if (loading == false) {
-      loading = true;
-      notifyListeners();
-    }
-    model.fetchStopsWithBuses().then((stops) {
-      loading = false;
-      notifyListeners();
-    });
-  }
-
-  void updateBusStops(BusStop startPoint, BusStop destPoint, String name) {
-    start = startPoint;
-    destination = destPoint;
-  }
-
-  void updateStartController(BusStop stop) {
-    startController.text = stop.name;
-    start = stop;
+  void updateStartController(Place? place) {
+    startController.text = place?.name ?? '';
+    start = place;
     notifyListeners();
   }
 
-  void updateDestController(BusStop stop) {
-    destController.text = stop.name;
-    destination = stop;
+  void updateDestController(Place? place) {
+    destController.text = place?.name ?? '';
+    destination = place;
     notifyListeners();
   }
 

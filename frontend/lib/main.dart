@@ -33,19 +33,18 @@ class MyApp extends StatelessWidget {
 
         // searchbar
         searchBarTheme: SearchBarThemeData(
-          elevation: WidgetStatePropertyAll(0),
-          backgroundColor: WidgetStatePropertyAll(AppColors.grey95),
-          //padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 16)),
+          elevation: const WidgetStatePropertyAll(0),
+          backgroundColor: const WidgetStatePropertyAll(AppColors.grey95),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           hintStyle: WidgetStatePropertyAll(
             Theme.of(
               context,
-            ).textTheme.bodyLarge?.copyWith(color: AppColors.grey50),
+            ).textTheme.bodySmall?.copyWith(color: AppColors.grey50),
           ),
           textStyle: WidgetStatePropertyAll(
-            Theme.of(context).textTheme.bodyLarge,
+            Theme.of(context).textTheme.bodySmall,
           ),
         ),
 
@@ -64,10 +63,7 @@ class MyApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(24),
-            borderSide: const BorderSide(
-              color: AppColors.secondaryMain,
-              width: 1,
-            ),
+            borderSide: const BorderSide(color: AppColors.grey50, width: 1),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(24),
@@ -79,7 +75,7 @@ class MyApp extends StatelessWidget {
           ),
           hintStyle: Theme.of(
             context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.grey50),
+          ).textTheme.bodyLarge?.copyWith(color: AppColors.grey50),
         ),
 
         // cursor

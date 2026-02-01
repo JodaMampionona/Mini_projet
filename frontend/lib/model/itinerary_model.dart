@@ -1,4 +1,4 @@
-import 'package:frontend/model/bus_stop_model.dart';
+import 'package:frontend/model/place_model.dart';
 import 'package:frontend/utils/dio_util.dart';
 
 class Itinerary {
@@ -28,22 +28,23 @@ class Itinerary {
 }
 
 class ItineraryModel {
-  Future<List<Itinerary>> getItinerary(
-    BusStop start,
-    BusStop destination,
-  ) async {
-    if (start.id < 0 || destination.id < 0) return [];
-
+  Future<List<Itinerary>> getItinerary(Place start, Place destination) async {
     try {
       final response = await dio.get(
-        '/itinerary?start_id=${start.id}&destination_id=${destination.id}',
+        '$apiAuthority${apiPrefix}itinerary',
+        queryParameters: {
+          'start_lat': start.lat,
+          'start_lon': start.lon,
+          'destination_lat': destination.lat,
+          'destination_lon': destination.lon,
+        },
       );
 
-      final itinerary = (response.data as List)
-          .map((jsonItem) => Itinerary.fromJson(jsonItem))
-          .toList();
+      final data = response.data;
 
-      return itinerary;
+      if (data is! List) return [];
+
+      return data.map<Itinerary>((json) => Itinerary.fromJson(json)).toList();
     } catch (e) {
       return [];
     }

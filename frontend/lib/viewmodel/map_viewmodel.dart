@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/model/bus_stop_model.dart';
+import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
 
 class MapViewModel extends ChangeNotifier {
@@ -7,8 +7,8 @@ class MapViewModel extends ChangeNotifier {
   List<Itinerary> itinerary = [];
 
   bool loading = false;
-  BusStop? start;
-  BusStop? dest;
+  Place? start;
+  Place? dest;
 
   // controllers
   final TextEditingController startController = TextEditingController();
@@ -24,7 +24,8 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getItinerary(BusStop start, BusStop dest) {
+  void getItinerary(Place start, Place dest) {
+    setLoading(true);
     model.getItinerary(start, dest).then((newItinerary) {
       itinerary = newItinerary;
       setLoading(false);

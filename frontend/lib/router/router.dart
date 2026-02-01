@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/model/bus_stop_model.dart';
+import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';
@@ -9,10 +9,12 @@ import 'package:frontend/view/home/home_view.dart';
 import 'package:frontend/view/itinerary/itinerary_view.dart';
 import 'package:frontend/view/map/map_view.dart';
 import 'package:frontend/view/on_boarding/on_boarding_view.dart';
+import 'package:frontend/view/search/search_view.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:frontend/viewmodel/map_viewmodel.dart';
 import 'package:frontend/viewmodel/on_boarding_viewmodel.dart';
+import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/widgets/nav_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +52,23 @@ final appRouter = GoRouter(
           },
         ),
       ),
+    ),
+
+    // search
+    GoRoute(
+      name: Routes.search.name,
+      path: Routes.search.path,
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, dynamic>?;
+        final placeHolder = extraData?['placeholder'] ?? 'Rechercher';
+        return ChangeNotifierProvider(
+          create: (_) => SearchViewModel(),
+          child: SearchView(
+            inputPlaceholder: placeHolder as String,
+            onPlaceTap: (place) => context.pop(place),
+          ),
+        );
+      },
     ),
 
     // itinerary
@@ -102,9 +121,6 @@ final appRouter = GoRouter(
           name: Routes.home.name,
           path: Routes.home.path,
           builder: (context, state) => HomeView(
-            onSwapPress: (viewModel) {
-              viewModel.swapStartAndDestination();
-            },
             onSearchItineraryPress: (context, viewModel) {
               context.goNamed(
                 Routes.map.name,
@@ -114,14 +130,29 @@ final appRouter = GoRouter(
                 },
               );
             },
+            onStartTap: (context, vm) async {
+              final place = await context.pushNamed<Place>(
+                Routes.search.name,
+                extra: {'placeholder': 'Où vous trouvez-vous ?'},
+              );
+              vm.updateStartController(place);
+            },
+            onDestinationTap: (context, vm) async {
+              final place = await context.pushNamed<Place>(
+                Routes.search.name,
+                extra: {'placeholder': 'Où voulez-vous aller ?'},
+              );
+              vm.updateDestController(place);
+            },
           ),
         ),
+
         // map
         GoRoute(
           name: Routes.map.name,
           path: Routes.map.path,
           builder: (context, state) {
-            final extraData = state.extra as Map<String, BusStop?>?;
+            final extraData = state.extra as Map<String, Place?>?;
             final start = extraData?['start'];
             final dest = extraData?['dest'];
 

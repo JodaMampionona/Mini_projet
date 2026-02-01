@@ -5,7 +5,7 @@ import 'package:frontend/viewmodel/home_viewmodel.dart';
 
 class CardForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
-  final Function(BuildContext) onSearchItineraryPress;
+  final Function() onSearchItineraryPress;
   final Function() onSwapPress;
   final Function() onStartTap;
   final Function() onDestTap;
@@ -103,11 +103,13 @@ class CardForm extends StatelessWidget {
                     backgroundColor: WidgetStatePropertyAll(
                       AppColors.primaryMain,
                     ),
-                    foregroundColor: WidgetStatePropertyAll(AppColors.secondaryShade100),
+                    foregroundColor: WidgetStatePropertyAll(
+                      AppColors.secondaryShade100,
+                    ),
                   ),
                   onPressed: () {
                     if (!formKey.currentState!.validate()) return;
-                    onSearchItineraryPress(context);
+                    onSearchItineraryPress();
                   },
                   child: Text('Rechercher'),
                 ),

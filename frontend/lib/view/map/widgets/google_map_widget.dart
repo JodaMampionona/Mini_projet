@@ -15,37 +15,59 @@ class GoogleMapWidget extends StatefulWidget {
 }
 
 class GoogleMapWidgetState extends State<GoogleMapWidget> {
+  late BitmapDescriptor stopMarkerIcon;
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMarkerIcon();
+  }
+
+  Future<void> _loadMarkerIcon() async {
+    stopMarkerIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(28, 28)),
+      'assets/images/bus_marker.png',
+    );
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     final itineraryPolylines = _getPolylines(widget.itinerary);
     final markers = _getMarkers(widget.itinerary);
 
-    return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        polylines: itineraryPolylines,
-        markers: markers,
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(-18.907437, 47.526135),
-          zoom: 12,
-        ),
-        style: _mapStyle,
-        onMapCreated: (GoogleMapController controller) async {
-          _controller.complete(controller);
+    return GoogleMap(
+      mapType: MapType.normal,
+      polylines: itineraryPolylines,
+      markers: markers,
+      zoomControlsEnabled: false,
+      initialCameraPosition: const CameraPosition(
+        target: LatLng(-18.907437, 47.526135),
+        zoom: 12,
+      ),
+      style: _mapStyle,
+      onMapCreated: (GoogleMapController controller) {
+        _controller.complete(controller);
+
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await Future.delayed(Duration(milliseconds: 300));
+
+          double padding = 0;
+          if (context.mounted) {
+            padding = MediaQuery.of(context).size.height * 0.15;
+          }
 
           if (widget.itinerary.isNotEmpty) {
             final bounds = _getBounds(widget.itinerary);
-
-            // délai pour que la map soit rendue
-            await Future.delayed(const Duration(milliseconds: 300));
-
-            controller.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+            await controller.animateCamera(
+              CameraUpdate.newLatLngBounds(bounds, padding),
+              duration: Duration(milliseconds: 300),
+            );
           }
-        },
-      ),
+        });
+      },
     );
   }
 
@@ -58,13 +80,23 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
         polylineId: const PolylineId('itinerary'),
         points: polylinePoints,
         color: AppColors.secondaryMain,
-        width: 10,
+        width: 9,
       ),
     };
   }
 
   /// Calcul des bounds pour contenir toute la polyline
   LatLngBounds _getBounds(List<Itinerary> itinerary) {
+    if (itinerary.length == 1) {
+      const double radius = 0.0025;
+      final point = itinerary.first;
+
+      return LatLngBounds(
+        southwest: LatLng(point.lat - radius, point.lon - radius),
+        northeast: LatLng(point.lat + radius, point.lon + radius),
+      );
+    }
+
     double south = itinerary.first.lat;
     double north = itinerary.first.lat;
     double west = itinerary.first.lon;
@@ -90,30 +122,30 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     for (int i = 0; i < itinerary.length; i++) {
       final point = itinerary[i];
       String label;
-      BitmapDescriptor icon;
 
       if (i == 0) {
         // start
         label = itinerary[i].from;
-        icon = BitmapDescriptor.defaultMarkerWithHue(200);
       } else if (i == itinerary.length - 1) {
         // end
         label = itinerary[i].to;
-        icon = BitmapDescriptor.defaultMarkerWithHue(200);
       } else {
         // in between
         label = itinerary[i].from;
-        icon = BitmapDescriptor.defaultMarkerWithHue(44);
       }
 
-      markers.add(
-        Marker(
-          markerId: MarkerId('marker_$i'),
-          position: LatLng(point.lat, point.lon),
-          infoWindow: InfoWindow(title: label),
-          icon: icon,
-        ),
-      );
+      // TODO: remove condition
+      if (i == 0 || i == itinerary.length - 1) {
+        markers.add(
+          Marker(
+            markerId: MarkerId('marker_$i'),
+            position: LatLng(point.lat, point.lon),
+            icon: stopMarkerIcon,
+            infoWindow: InfoWindow(title: label),
+            anchor: Offset(0.5, 0.5),
+          ),
+        );
+      }
     }
 
     return markers;

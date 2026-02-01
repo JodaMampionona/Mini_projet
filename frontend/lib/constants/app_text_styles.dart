@@ -47,7 +47,7 @@ class AppTextStyles {
 
   static final TextStyle label = GoogleFonts.inter(
     fontSize: 12,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
     decoration: TextDecoration.none,
     color: AppColors.secondaryShade100,

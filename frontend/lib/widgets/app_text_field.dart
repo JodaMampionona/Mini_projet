@@ -4,16 +4,18 @@ import 'package:frontend/constants/app_text_styles.dart';
 
 class AppTextField extends StatelessWidget {
   final String hintText;
+  final TextEditingController controller;
   final IconData? icon;
   final Function()? onTap;
-  final TextEditingController controller;
+  final FocusNode? focusNode;
 
   const AppTextField({
     super.key,
     required this.hintText,
+    required this.controller,
+    this.focusNode,
     this.icon,
     this.onTap,
-    required this.controller,
   });
 
   @override
@@ -22,7 +24,9 @@ class AppTextField extends StatelessWidget {
       controller: controller,
       readOnly: onTap != null,
       onTap: onTap,
+      focusNode: focusNode,
       decoration: InputDecoration(
+        constraints: BoxConstraints(maxHeight: 40, minHeight: 40),
         hintText: hintText,
         prefixIcon: icon != null ? Icon(icon, color: AppColors.grey50) : null,
         hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey40),
