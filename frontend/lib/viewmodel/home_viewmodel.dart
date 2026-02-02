@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/place_model.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  final model = PlaceModel();
+  final model = ItineraryModel();
   bool loading = true;
   Place? start;
   Place? destination;
+  List<Itinerary> itinerary = [];
 
   final TextEditingController startController = TextEditingController();
   final TextEditingController destController = TextEditingController();
 
-  List<Place> get foundPlaces => model.places;
+  Future<void> getItinerary(Place? start, Place? dest) async {
+    setLoading(true);
+
+    final result = await model.getItinerary(start, dest);
+    itinerary = result;
+
+    setLoading(false);
+  }
+
+  void setLoading(bool val) {
+    loading = val;
+    notifyListeners();
+  }
 
   void swapStartAndDestination() {
     // swap controller values

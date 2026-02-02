@@ -34,7 +34,9 @@ class Itinerary {
 }
 
 class ItineraryModel {
-  Future<List<Itinerary>> getItinerary(Place start, Place destination) async {
+  Future<List<Itinerary>> getItinerary(Place? start, Place? destination) async {
+    if (start == null || destination == null) return [];
+
     try {
       final response = await dio.get(
         '$apiAuthority${apiPrefix}itinerary/',

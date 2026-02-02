@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
@@ -11,6 +12,7 @@ import '../../viewmodel/map_viewmodel.dart';
 class MapView extends StatefulWidget {
   final Place? start;
   final Place? dest;
+  final List<Itinerary> itinerary;
   final Function(BuildContext, MapViewModel) onSeeItineraryTap;
   final Function(BuildContext) onBackTap;
 
@@ -20,6 +22,7 @@ class MapView extends StatefulWidget {
     required this.dest,
     required this.onSeeItineraryTap,
     required this.onBackTap,
+    required this.itinerary,
   });
 
   @override
@@ -31,10 +34,12 @@ class _MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     if (widget.start == null || widget.dest == null) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MapViewModel>()
-        ..updateControllers(start: widget.start!.name, dest: widget.dest!.name)
-        ..getItinerary(widget.start!, widget.dest!);
+      context.read<MapViewModel>().updateControllers(
+        start: widget.start!.name,
+        dest: widget.dest!.name,
+      );
     });
   }
 
@@ -55,7 +60,7 @@ class _MapViewState extends State<MapView> {
               onBackTap: () => widget.onBackTap(context),
               startController: vm.startController,
               destController: vm.destController,
-              onSearchTap: () => vm.getItinerary(widget.start!, widget.dest!),
+              onSearchTap: () => {},
             ),
 
             // bottom link
