@@ -6,5 +6,10 @@ service = BusItineraryService()
 
 
 @router.get("/")
-def get_bus_itinerary(start_id: int, destination_id: int):
-    return service.get_bus_itinerary(start_id, destination_id)
+def get_bus_itinerary_by_gps(start_lat: float, start_lon: float, destination_lat: float, destination_lon: float):
+    return service.get_bus_itinerary_by_gps(
+        start_lat=start_lat,
+        start_lon=start_lon,
+        destination_lat=destination_lat,
+        destination_lon=destination_lon
+    )

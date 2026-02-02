@@ -9,6 +9,7 @@ class SearchViewModel extends ChangeNotifier {
 
   String? errorMsg;
 
+  bool _disposed = false;
   bool loading = false;
   bool positionLoading = false;
 
@@ -25,7 +26,7 @@ class SearchViewModel extends ChangeNotifier {
     if (query == null || query.length < 2) return;
 
     loading = true;
-    notifyListeners();
+    safeNotifyListeners();
 
     try {
       final result = await model.fetchPlacesByName(query);
@@ -36,7 +37,7 @@ class SearchViewModel extends ChangeNotifier {
       places = [];
     } finally {
       loading = false;
-      notifyListeners();
+      safeNotifyListeners();
     }
   }
 
@@ -44,19 +45,25 @@ class SearchViewModel extends ChangeNotifier {
     try {
       positionLoading = true;
       errorMsg = null;
-      notifyListeners();
+      safeNotifyListeners();
       currentLocation = await model.getCurrentLocation();
     } catch (e) {
       errorMsg = e.toString();
-      notifyListeners();
+      safeNotifyListeners();
     } finally {
       positionLoading = false;
-      notifyListeners();
+      safeNotifyListeners();
     }
   }
 
   void requestInputFocus() {
     focusNode.requestFocus();
+  }
+
+  void safeNotifyListeners() {
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   void _onSearchChanged() {
@@ -74,7 +81,7 @@ class SearchViewModel extends ChangeNotifier {
 
     for (var p in places) {
       final key = '${p.name}-${p.city}';
-      if (!seen.contains(key)) {
+      if (!seen.contains(key) && p.name.trim().isNotEmpty) {
         seen.add(key);
         uniquePlaces.add(p);
       }
@@ -85,6 +92,7 @@ class SearchViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _debounce?.cancel();
     placeController.dispose();
     focusNode.dispose();

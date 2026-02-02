@@ -9,6 +9,7 @@ class MapViewModel extends ChangeNotifier {
   bool loading = false;
   Place? start;
   Place? dest;
+  String? errorMsg;
 
   // controllers
   final TextEditingController startController = TextEditingController();
@@ -26,10 +27,13 @@ class MapViewModel extends ChangeNotifier {
 
   void getItinerary(Place start, Place dest) {
     setLoading(true);
-    model.getItinerary(start, dest).then((newItinerary) {
-      itinerary = newItinerary;
+    model.getItinerary(start, dest).then((result) {
+      if (result != null) {
+        itinerary = result;
+      } else {
+        errorMsg = "Impossible de récupérer l'itinéraire";
+      }
       setLoading(false);
-      notifyListeners();
     });
   }
 

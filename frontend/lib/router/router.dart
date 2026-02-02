@@ -61,9 +61,11 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>?;
         final placeHolder = extraData?['placeholder'] ?? 'Rechercher';
+        final showGeolocationPrompt = extraData?['showLocationPrompt'] ?? true;
         return ChangeNotifierProvider(
           create: (_) => SearchViewModel(),
           child: SearchView(
+            showGeolocationPrompt: showGeolocationPrompt,
             inputPlaceholder: placeHolder as String,
             onPlaceTap: (place) => context.pop(place),
           ),
@@ -77,7 +79,8 @@ final appRouter = GoRouter(
       path: Routes.itinerary.path,
       builder: (context, state) {
         final extraData = state.extra as Map<String, List<Itinerary>?>?;
-        final itinerary = extraData?['itinerary'];
+        final itinerary = extraData?['itinerary'] ?? [];
+
         return ChangeNotifierProvider(
           create: (_) => ItineraryViewModel(),
           child: ItineraryView(
@@ -124,29 +127,31 @@ final appRouter = GoRouter(
             onSearchItineraryPress: (context, viewModel) {
               context.goNamed(
                 Routes.map.name,
-                extra: {
-                  'start': viewModel.start,
-                  'dest': viewModel.destination,
-                },
+                extra: {'start': viewModel.start, 'end': viewModel.destination},
               );
             },
             onStartTap: (context, vm) async {
               final place = await context.pushNamed<Place>(
                 Routes.search.name,
-                extra: {'placeholder': 'Où vous trouvez-vous ?'},
+                extra: {
+                  'placeholder': 'Où vous trouvez-vous ?',
+                  'showLocationPrompt': true,
+                },
               );
               vm.updateStartController(place);
             },
             onDestinationTap: (context, vm) async {
               final place = await context.pushNamed<Place>(
                 Routes.search.name,
-                extra: {'placeholder': 'Où voulez-vous aller ?'},
+                extra: {
+                  'placeholder': 'Où voulez-vous aller ?',
+                  'showLocationPrompt': false,
+                },
               );
               vm.updateDestController(place);
             },
           ),
         ),
-
         // map
         GoRoute(
           name: Routes.map.name,
@@ -154,11 +159,11 @@ final appRouter = GoRouter(
           builder: (context, state) {
             final extraData = state.extra as Map<String, Place?>?;
             final start = extraData?['start'];
-            final dest = extraData?['dest'];
+            final dest = extraData?['end'];
 
             return MapView(
               start: start,
-              dest: dest,
+              end: dest,
               onBackTap: (context) => context.goNamed(Routes.home.path),
               onSeeItineraryTap: (context, viewModel) {
                 context.pushNamed(

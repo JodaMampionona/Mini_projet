@@ -32,7 +32,7 @@ class PlaceModel {
       places = await PhotonService.search(name);
       return places;
     } catch (e) {
-      return Future.error('Veuillez vérifier votre connexion internet.');
+      return Future.error('Connexion internet instable.');
     }
   }
 

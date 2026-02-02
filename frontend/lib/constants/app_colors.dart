@@ -30,6 +30,6 @@ class AppColors {
   static const componentBg = Color(0xFFFFFFFF);
 
   // error
-  static const errorBg = Color(0x66F65A3B);
+  static const errorBg = Color(0xFFF65A3B);
   static const errorText = Color(0xFF3B0C02);
 }

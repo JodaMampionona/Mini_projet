@@ -8,13 +8,13 @@ import 'package:provider/provider.dart';
 class ItineraryView extends StatefulWidget {
   final Function(BuildContext) onBackPress;
   final Function(BuildContext) onNewItineraryTap;
-  final List<Itinerary>? itinerary;
+  final List<Itinerary> itinerary;
 
   const ItineraryView({
     super.key,
     required this.onBackPress,
     required this.onNewItineraryTap,
-    this.itinerary,
+    required this.itinerary,
   });
 
   @override
@@ -26,7 +26,7 @@ class _ItineraryViewState extends State<ItineraryView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ItineraryViewModel>().setItinerary(widget.itinerary ?? []);
+      context.read<ItineraryViewModel>().setItinerary(widget.itinerary);
     });
   }
 

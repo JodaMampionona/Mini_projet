@@ -10,14 +10,14 @@ import '../../viewmodel/map_viewmodel.dart';
 
 class MapView extends StatefulWidget {
   final Place? start;
-  final Place? dest;
+  final Place? end;
   final Function(BuildContext, MapViewModel) onSeeItineraryTap;
   final Function(BuildContext) onBackTap;
 
   const MapView({
     super.key,
     required this.start,
-    required this.dest,
+    required this.end,
     required this.onSeeItineraryTap,
     required this.onBackTap,
   });
@@ -30,11 +30,11 @@ class _MapViewState extends State<MapView> {
   @override
   void initState() {
     super.initState();
-    if (widget.start == null || widget.dest == null) return;
+    if (widget.start == null || widget.end == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MapViewModel>()
-        ..updateControllers(start: widget.start!.name, dest: widget.dest!.name)
-        ..getItinerary(widget.start!, widget.dest!);
+        ..updateControllers(start: widget.start!.name, dest: widget.end!.name)
+        ..getItinerary(widget.start!, widget.end!);
     });
   }
 
@@ -44,29 +44,36 @@ class _MapViewState extends State<MapView> {
 
     return Scaffold(
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // map
-            GoogleMapWidget(itinerary: vm.itinerary),
-
             // inputs on top
             TopInputs(
               onBackTap: () => widget.onBackTap(context),
               startController: vm.startController,
               destController: vm.destController,
+              onSearchTap: () => vm.getItinerary(widget.start!, widget.end!),
             ),
 
-            // bottom link
-            vm.loading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryMain,
-                    ),
-                  )
-                : Align(
-                    alignment: Alignment.bottomCenter,
-                    child: _bottomCard(vm),
-                  ),
+            Expanded(
+              child: Stack(
+                children: [
+                  // map
+                  GoogleMapWidget(itinerary: vm.itinerary),
+
+                  // bottom link
+                  vm.loading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.secondaryMain,
+                          ),
+                        )
+                      : Align(
+                          alignment: Alignment.bottomCenter,
+                          child: _bottomCard(vm),
+                        ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

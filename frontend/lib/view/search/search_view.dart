@@ -9,11 +9,13 @@ import 'package:provider/provider.dart';
 class SearchView extends StatefulWidget {
   final String inputPlaceholder;
   final Function(Place) onPlaceTap;
+  final bool showGeolocationPrompt;
 
   const SearchView({
     super.key,
     required this.inputPlaceholder,
     required this.onPlaceTap,
+    required this.showGeolocationPrompt,
   });
 
   @override
@@ -48,71 +50,78 @@ class _SearchViewState extends State<SearchView> {
           children: [
             // error message
             if (vm.errorMsg != null)
-              Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                color: AppColors.errorBg,
-                child: Text(
-                  vm.errorMsg!,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.errorText,
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    color: AppColors.errorBg.withAlpha(60),
+                    child: Text(
+                      vm.errorMsg!,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.errorText,
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 16),
+                ],
               ),
-            SizedBox(height: 16),
 
             // for geolocation
-            vm.positionLoading
-                ? Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: Column(
-                        spacing: 8,
-                        children: [
-                          Text('Récupération de votre position...'),
-                          CircularProgressIndicator(
-                            color: AppColors.primaryMain,
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : InkWell(
-                    onTap: () async {
-                      await vm.getCurrentLocation();
-                      if (vm.currentLocation != null) {
-                        widget.onPlaceTap(vm.currentLocation!);
-                      }
-                    },
-                    child: Ink(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      color: AppColors.componentBg,
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          Icon(
-                            Icons.near_me,
-                            color: AppColors.primaryMain,
-                            size: 24,
-                          ),
-                          Text(
-                            'Utiliser ma position actuelle',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.primaryShade50,
+            if (widget.showGeolocationPrompt)
+              vm.positionLoading
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: Column(
+                          spacing: 8,
+                          children: [
+                            Text('Récupération de votre position...'),
+                            CircularProgressIndicator(
+                              color: AppColors.primaryMain,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    )
+                  : InkWell(
+                      onTap: () async {
+                        await vm.getCurrentLocation();
+                        if (vm.currentLocation != null) {
+                          widget.onPlaceTap(vm.currentLocation!);
+                        }
+                      },
+                      child: Ink(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        color: AppColors.componentBg,
+                        child: Row(
+                          spacing: 8,
+                          children: [
+                            Icon(
+                              Icons.near_me,
+                              color: AppColors.primaryMain,
+                              size: 24,
+                            ),
+                            Text(
+                              'Utiliser ma position actuelle',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.primaryShade50,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+
+            if (widget.showGeolocationPrompt) SizedBox(height: 16),
 
             // list of results
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.only(left: 16, bottom: 16),
               child: Text(
                 'Lieux trouvés',
                 style: AppTextStyles.bodyMedium.copyWith(

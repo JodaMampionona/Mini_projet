@@ -20,7 +20,9 @@ final dio =
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
-            print('REQUEST[${options.method}] => PATH: ${options.path}');
+            print(
+              'REQUEST[${options.method}] => PATH: ${options.path}${options.queryParameters}',
+            );
             return handler.next(options);
           },
           onResponse: (response, handler) {
