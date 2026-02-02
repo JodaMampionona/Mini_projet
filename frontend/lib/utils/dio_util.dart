@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 // api
-const apiAuthority = 'http://192.168.1.82:8000';
+const apiAuthority = 'http://192.168.88.27:8000';
 const apiPrefix = '/';
 
 // http utils
