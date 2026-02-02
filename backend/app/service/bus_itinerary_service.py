@@ -161,11 +161,11 @@ class BusItineraryService:
         self,
         start_lat: float,
         start_lon: float,
-        end_lat: float,
-        end_lon: float
+        destination_lat: float,
+        destination_lon: float
     ):
         start_stop = self.get_nearest_stop(start_lat, start_lon)
-        end_stop = self.get_nearest_stop(end_lat, end_lon)
+        end_stop = self.get_nearest_stop(destination_lat, destination_lon)
 
         if not start_stop or not end_stop:
             return []
