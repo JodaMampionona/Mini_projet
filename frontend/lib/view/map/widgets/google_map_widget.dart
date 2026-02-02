@@ -56,7 +56,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
           double padding = 0;
           if (context.mounted) {
-            padding = MediaQuery.of(context).size.height * 0.16;
+            padding = MediaQuery.of(context).size.height * 0.13;
           }
 
           if (widget.itinerary.isNotEmpty) {
@@ -97,103 +97,61 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   // Create markers for start, end, and in-between
   Set<Marker> _getMarkers(List<Itinerary> itinerary) {
+    if (itinerary.isEmpty) return <Marker>{};
+
     final markers = <Marker>{};
 
-    if (itinerary.isEmpty) return markers;
-
-    if (itinerary.length == 1) {
-      final point = itinerary.first;
+    for (int i = 0; i < itinerary.length; i++) {
+      final point = itinerary[i];
+      var position = LatLng(point.startLat, point.startLon);
 
       markers.add(
         Marker(
-          markerId: MarkerId('start_marker'),
-          position: LatLng(point.startLat, point.startLon),
+          markerId: MarkerId('marker_${i}_${point.from}'),
+          position: position,
           infoWindow: InfoWindow(title: point.from),
           icon: BitmapDescriptor.defaultMarkerWithHue(45),
         ),
       );
 
-      markers.add(
-        Marker(
-          markerId: MarkerId('end_marker'),
-          position: LatLng(point.endLat, point.endLon),
-          infoWindow: InfoWindow(title: point.to),
-          icon: BitmapDescriptor.defaultMarkerWithHue(45),
-        ),
-      );
-
-      return markers;
-    }
-
-    for (int i = 0; i < itinerary.length; i++) {
-      final point = itinerary[i];
-      String label;
-
-      if (i == 0) {
-        // start
-        label = itinerary[i].from;
-      } else if (i == itinerary.length - 1) {
-        // end
-        label = itinerary[i].to;
-      } else {
-        // in between
-        label = itinerary[i].from;
-      }
-
-      var position = LatLng(point.startLat, point.startLon);
       if (i == itinerary.length - 1) {
-        position = LatLng(point.endLat, point.endLon);
+        markers.add(
+          Marker(
+            markerId: MarkerId('marker_${i}_${point.to}'),
+            position: LatLng(point.endLat, point.endLon),
+            infoWindow: InfoWindow(title: point.to),
+            icon: BitmapDescriptor.defaultMarkerWithHue(45),
+          ),
+        );
       }
-
-      markers.add(
-        Marker(
-          markerId: MarkerId('marker_$i'),
-          position: position,
-          infoWindow: InfoWindow(title: label),
-          icon: BitmapDescriptor.defaultMarkerWithHue(45),
-        ),
-      );
     }
 
     return markers;
   }
 
-  /// Calcul des bounds pour contenir toute la polyline
+  // bounds to contain all the polylines
   LatLngBounds _getBounds(List<Itinerary> itinerary) {
-    if (itinerary.length == 1) {
-      const double radius = 0.0025;
-      final point = itinerary.first;
-
-      double south =
-          (point.startLat < point.endLat ? point.startLat : point.endLat) -
-          radius;
-      double north =
-          (point.startLat > point.endLat ? point.startLat : point.endLat) +
-          radius;
-      double west =
-          (point.startLon < point.endLon ? point.startLon : point.endLon) -
-          radius;
-      double east =
-          (point.startLon > point.endLon ? point.startLon : point.endLon) +
-          radius;
-
-      return LatLngBounds(
-        southwest: LatLng(south, west),
-        northeast: LatLng(north, east),
-      );
-    }
-
     double south = itinerary.first.startLat;
     double north = itinerary.first.startLat;
     double west = itinerary.first.startLon;
     double east = itinerary.first.startLon;
 
-    for (final point in itinerary) {
-      south = south < point.startLat ? south : point.startLat;
-      north = north > point.startLat ? north : point.startLat;
-      west = west < point.startLon ? west : point.startLon;
-      east = east > point.startLon ? east : point.startLon;
+    for (final it in itinerary) {
+      // start
+      if (it.startLat < south) south = it.startLat;
+      if (it.startLat > north) north = it.startLat;
+      if (it.startLon < west) west = it.startLon;
+      if (it.startLon > east) east = it.startLon;
+
+      // end
+      if (it.endLat < south) south = it.endLat;
+      if (it.endLat > north) north = it.endLat;
+      if (it.endLon < west) west = it.endLon;
+      if (it.endLon > east) east = it.endLon;
     }
+
+    final bottomPadding = (north - south) * 0.1;
+    south -= bottomPadding;
 
     return LatLngBounds(
       southwest: LatLng(south, west),
