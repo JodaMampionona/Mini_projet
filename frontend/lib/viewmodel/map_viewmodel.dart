@@ -24,6 +24,15 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void getItinerary(Place? start, Place? dest) async {
+    setLoading(true);
+
+    model.getItinerary(start, dest).then((res) {
+      itinerary = res;
+      setLoading(false);
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();

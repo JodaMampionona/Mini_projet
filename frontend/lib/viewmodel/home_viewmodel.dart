@@ -7,19 +7,9 @@ class HomeViewModel extends ChangeNotifier {
   bool loading = true;
   Place? start;
   Place? destination;
-  List<Itinerary> itinerary = [];
 
   final TextEditingController startController = TextEditingController();
   final TextEditingController destController = TextEditingController();
-
-  Future<void> getItinerary(Place? start, Place? dest) async {
-    setLoading(true);
-
-    final result = await model.getItinerary(start, dest);
-    itinerary = result;
-
-    setLoading(false);
-  }
 
   void setLoading(bool val) {
     loading = val;

@@ -121,16 +121,11 @@ final appRouter = GoRouter(
           name: Routes.home.name,
           path: Routes.home.path,
           builder: (context, state) => HomeView(
-            onSearchItineraryPress: (context, viewModel) async {
-              await viewModel.getItinerary(
-                viewModel.start,
-                viewModel.destination,
-              );
+            onSearchItineraryPress: (context, viewModel) {
               if (context.mounted) {
                 context.goNamed(
                   Routes.map.name,
                   extra: {
-                    'itinerary': viewModel.itinerary,
                     'start': viewModel.start,
                     'dest': viewModel.destination,
                   },
@@ -162,10 +157,8 @@ final appRouter = GoRouter(
             final extraData = state.extra as Map<String, dynamic>?;
             final start = extraData?['start'] as Place?;
             final dest = extraData?['dest'] as Place?;
-            final itinerary = extraData?['itinerary'] as List<Itinerary>;
 
             return MapView(
-              itinerary: itinerary,
               start: start,
               dest: dest,
               onBackTap: (context) => context.goNamed(Routes.home.path),

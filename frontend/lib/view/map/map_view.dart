@@ -12,7 +12,6 @@ import '../../viewmodel/map_viewmodel.dart';
 class MapView extends StatefulWidget {
   final Place? start;
   final Place? dest;
-  final List<Itinerary> itinerary;
   final Function(BuildContext, MapViewModel) onSeeItineraryTap;
   final Function(BuildContext) onBackTap;
 
@@ -22,7 +21,6 @@ class MapView extends StatefulWidget {
     required this.dest,
     required this.onSeeItineraryTap,
     required this.onBackTap,
-    required this.itinerary,
   });
 
   @override
@@ -36,17 +34,17 @@ class _MapViewState extends State<MapView> {
     if (widget.start == null || widget.dest == null) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MapViewModel>().updateControllers(
+      context.read<MapViewModel>()
+        ..updateControllers(
         start: widget.start!.name,
         dest: widget.dest!.name,
-      );
+      )..getItinerary(widget.start, widget.dest);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MapViewModel>();
-    GoogleMapWidget(itinerary: vm.itinerary);
 
     return Scaffold(
       body: SafeArea(
