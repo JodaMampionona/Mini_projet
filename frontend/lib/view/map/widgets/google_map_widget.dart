@@ -60,10 +60,11 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
           }
 
           if (widget.itinerary.isNotEmpty) {
+            await Future.delayed(Duration(seconds: 3));
             final bounds = _getBounds(widget.itinerary);
             await controller.animateCamera(
               CameraUpdate.newLatLngBounds(bounds, padding),
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 400),
             );
           }
         });
@@ -73,7 +74,18 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   /// Création de la polyline
   Set<Polyline> _getPolylines(List<Itinerary> itinerary) {
-    final polylinePoints = itinerary.map((e) => LatLng(e.lat, e.lon)).toList();
+    if (itinerary.isEmpty) return {};
+
+    final List<LatLng> polylinePoints = [];
+
+    for (final segment in itinerary) {
+      // ajouter start de chaque segment
+      polylinePoints.add(LatLng(segment.startLat, segment.startLon));
+    }
+
+    // pour le dernier segment, ajouter son endLat/endLon
+    final last = itinerary.last;
+    polylinePoints.add(LatLng(last.endLat, last.endLon));
 
     return {
       Polyline(
@@ -85,39 +97,35 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     };
   }
 
-  /// Calcul des bounds pour contenir toute la polyline
-  LatLngBounds _getBounds(List<Itinerary> itinerary) {
-    if (itinerary.length == 1) {
-      const double radius = 0.0025;
-      final point = itinerary.first;
-
-      return LatLngBounds(
-        southwest: LatLng(point.lat - radius, point.lon - radius),
-        northeast: LatLng(point.lat + radius, point.lon + radius),
-      );
-    }
-
-    double south = itinerary.first.lat;
-    double north = itinerary.first.lat;
-    double west = itinerary.first.lon;
-    double east = itinerary.first.lon;
-
-    for (final point in itinerary) {
-      south = south < point.lat ? south : point.lat;
-      north = north > point.lat ? north : point.lat;
-      west = west < point.lon ? west : point.lon;
-      east = east > point.lon ? east : point.lon;
-    }
-
-    return LatLngBounds(
-      southwest: LatLng(south, west),
-      northeast: LatLng(north, east),
-    );
-  }
-
   // Create markers for start, end, and in-between
   Set<Marker> _getMarkers(List<Itinerary> itinerary) {
     final markers = <Marker>{};
+
+    if (itinerary.isEmpty) return markers;
+
+    if (itinerary.length == 1) {
+      final point = itinerary.first;
+
+      markers.add(
+        Marker(
+          markerId: MarkerId('start_marker'),
+          position: LatLng(point.startLat, point.startLon),
+          infoWindow: InfoWindow(title: point.from),
+          icon: BitmapDescriptor.defaultMarkerWithHue(45),
+        ),
+      );
+
+      markers.add(
+        Marker(
+          markerId: MarkerId('end_marker'),
+          position: LatLng(point.endLat, point.endLon),
+          infoWindow: InfoWindow(title: point.to),
+          icon: BitmapDescriptor.defaultMarkerWithHue(45),
+        ),
+      );
+
+      return markers;
+    }
 
     for (int i = 0; i < itinerary.length; i++) {
       final point = itinerary[i];
@@ -136,19 +144,66 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
       // TODO: remove condition
       if (i == 0 || i == itinerary.length - 1) {
+        var position = LatLng(point.startLat, point.startLon);
+        if (i == itinerary.length - 1) {
+          position = LatLng(point.endLat, point.endLon);
+        }
+
         markers.add(
           Marker(
             markerId: MarkerId('marker_$i'),
-            position: LatLng(point.lat, point.lon),
-            icon: stopMarkerIcon,
+            position: position,
             infoWindow: InfoWindow(title: label),
-            anchor: Offset(0.5, 0.5),
+            icon: BitmapDescriptor.defaultMarkerWithHue(45),
           ),
         );
       }
     }
 
     return markers;
+  }
+
+  /// Calcul des bounds pour contenir toute la polyline
+  LatLngBounds _getBounds(List<Itinerary> itinerary) {
+    if (itinerary.length == 1) {
+      const double radius = 0.0025;
+      final point = itinerary.first;
+
+      double south =
+          (point.startLat < point.endLat ? point.startLat : point.endLat) -
+          radius;
+      double north =
+          (point.startLat > point.endLat ? point.startLat : point.endLat) +
+          radius;
+      double west =
+          (point.startLon < point.endLon ? point.startLon : point.endLon) -
+          radius;
+      double east =
+          (point.startLon > point.endLon ? point.startLon : point.endLon) +
+          radius;
+
+      return LatLngBounds(
+        southwest: LatLng(south, west),
+        northeast: LatLng(north, east),
+      );
+    }
+
+    double south = itinerary.first.startLat;
+    double north = itinerary.first.startLat;
+    double west = itinerary.first.startLon;
+    double east = itinerary.first.startLon;
+
+    for (final point in itinerary) {
+      south = south < point.startLat ? south : point.startLat;
+      north = north > point.startLat ? north : point.startLat;
+      west = west < point.startLon ? west : point.startLon;
+      east = east > point.startLon ? east : point.startLon;
+    }
+
+    return LatLngBounds(
+      southwest: LatLng(south, west),
+      northeast: LatLng(north, east),
+    );
   }
 }
 

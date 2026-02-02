@@ -7,6 +7,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class TopInputs extends StatelessWidget {
   final Function() onBackTap;
+  final Function() onSearchTap;
   final TextEditingController startController;
   final TextEditingController destController;
 
@@ -15,12 +16,12 @@ class TopInputs extends StatelessWidget {
     required this.onBackTap,
     required this.startController,
     required this.destController,
+    required this.onSearchTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return // inputs on top
-    IntrinsicHeight(
+    return IntrinsicHeight(
       child: Container(
         padding: EdgeInsets.only(bottom: 10),
         color: AppColors.primaryTint100,
@@ -53,9 +54,19 @@ class TopInputs extends StatelessWidget {
                         icon: Symbols.distance,
                         onTap: () => context.goNamed(Routes.home.path),
                       ),
+
+                      /*
+                      SizedBox(
+                        width: double.infinity,
+                        height: 36,
+                        child: ElevatedButton(
+                          onPressed: onSearchTap,
+                          child: Text('Rechercher'),
+                        ),
+                      ),
+                       */
                     ],
                   ),
-
                   /*
 
                           Align(

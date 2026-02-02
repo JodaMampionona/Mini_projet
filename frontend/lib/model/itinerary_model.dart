@@ -5,15 +5,19 @@ class Itinerary {
   final String bus;
   final String from;
   final String to;
-  final double lat;
-  final double lon;
+  final double startLat;
+  final double startLon;
+  final double endLat;
+  final double endLon;
 
   Itinerary({
     required this.bus,
     required this.from,
     required this.to,
-    required this.lat,
-    required this.lon,
+    required this.startLat,
+    required this.startLon,
+    required this.endLat,
+    required this.endLon,
   });
 
   factory Itinerary.fromJson(Map<String, dynamic> json) {
@@ -21,8 +25,10 @@ class Itinerary {
       bus: json['bus'],
       from: json['from'],
       to: json['to'],
-      lat: json['lat'],
-      lon: json['lon'],
+      startLat: json['start_lat'],
+      startLon: json['start_lon'],
+      endLat: json['end_lat'],
+      endLon: json['end_lon'],
     );
   }
 }
@@ -31,7 +37,7 @@ class ItineraryModel {
   Future<List<Itinerary>> getItinerary(Place start, Place destination) async {
     try {
       final response = await dio.get(
-        '$apiAuthority${apiPrefix}itinerary',
+        '$apiAuthority${apiPrefix}itinerary/',
         queryParameters: {
           'start_lat': start.lat,
           'start_lon': start.lon,

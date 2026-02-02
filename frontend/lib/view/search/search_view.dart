@@ -48,24 +48,28 @@ class _SearchViewState extends State<SearchView> {
           children: [
             // error message
             if (vm.errorMsg != null)
-              Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                color: AppColors.errorBg,
-                child: Text(
-                  vm.errorMsg!,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.errorText,
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    color: AppColors.errorBg,
+                    child: Text(
+                      vm.errorMsg!,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.errorText,
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 16),
+                ],
               ),
-            SizedBox(height: 16),
 
             // for geolocation
             vm.positionLoading
                 ? Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.only(left: 16, right: 16),
                     child: Center(
                       child: Column(
                         spacing: 8,

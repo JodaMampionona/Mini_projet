@@ -41,6 +41,7 @@ class _MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MapViewModel>();
+    GoogleMapWidget(itinerary: vm.itinerary);
 
     return Scaffold(
       body: SafeArea(
@@ -54,13 +55,14 @@ class _MapViewState extends State<MapView> {
               onBackTap: () => widget.onBackTap(context),
               startController: vm.startController,
               destController: vm.destController,
+              onSearchTap: () => vm.getItinerary(widget.start!, widget.dest!),
             ),
 
             // bottom link
             vm.loading
                 ? Center(
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryMain,
+                      color: AppColors.secondaryMain,
                     ),
                   )
                 : Align(

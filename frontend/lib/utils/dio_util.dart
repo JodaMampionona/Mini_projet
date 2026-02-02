@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 // api
-const apiAuthority = 'http://192.168.1.82:8000';
+const apiAuthority = 'http://192.168.11.150:8000';
 const apiPrefix = '/';
 
 // http utils
@@ -20,7 +20,9 @@ final dio =
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
-            print('REQUEST[${options.method}] => PATH: ${options.path}');
+            print(
+              'REQUEST[${options.method}] => PATH: ${options.path}${options.queryParameters}',
+            );
             return handler.next(options);
           },
           onResponse: (response, handler) {
