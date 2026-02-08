@@ -25,10 +25,10 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SearchViewModel>().requestInputFocus();
     });
-    super.initState();
   }
 
   @override

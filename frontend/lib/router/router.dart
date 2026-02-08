@@ -10,6 +10,7 @@ import 'package:frontend/view/itinerary/itinerary_view.dart';
 import 'package:frontend/view/map/map_view.dart';
 import 'package:frontend/view/on_boarding/on_boarding_view.dart';
 import 'package:frontend/view/search/search_view.dart';
+import 'package:frontend/viewmodel/bus_viewmodel.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:frontend/viewmodel/map_viewmodel.dart';
@@ -103,6 +104,7 @@ final appRouter = GoRouter(
             ChangeNotifierProvider(create: (_) => HomeViewModel()),
             ChangeNotifierProvider(create: (_) => MapViewModel()),
             ChangeNotifierProvider(create: (_) => ItineraryViewModel()),
+            ChangeNotifierProvider(create: (_) => BusViewModel()),
           ],
           child: Scaffold(
             bottomNavigationBar: BottomNavBar(

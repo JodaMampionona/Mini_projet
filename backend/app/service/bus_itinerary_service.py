@@ -210,4 +210,4 @@ class BusItineraryService:
 
     def get_buses_simple_list(self):
         buses = self.busRepo.get_all()
-        return [{"id": b.id, "name": b.name} for b in buses]
+        return [{"bus_id": b.id, "bus_name": b.name} for b in buses]
