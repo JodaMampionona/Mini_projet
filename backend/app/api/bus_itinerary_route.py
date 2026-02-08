@@ -22,4 +22,4 @@ def get_buses(bus_id: Optional[int] = Query(None)):
         if not bus_details:
             raise HTTPException(status_code=404, detail="Bus non trouvé")
         return bus_details
-    return service.get_all_buses()
+    return service.get_buses_simple_list()
