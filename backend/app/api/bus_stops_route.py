@@ -7,3 +7,4 @@ service = BusStopsService()
 @router.get("/")
 def get_all_bus_stops():
     return service.get_all()
+

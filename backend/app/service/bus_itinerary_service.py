@@ -173,3 +173,37 @@ class BusItineraryService:
             return []
 
         return self.get_bus_itinerary(start_stop.id, end_stop.id)
+        # -------------------------
+        # MÉTHODES POUR LES LISTES DE BUS
+        # -------------------------
+    def get_all_buses(self):
+        return self.busRepo.get_all()
+
+    def get_bus_by_id(self, bus_id: int):
+        return self.busRepo.get_by_id(bus_id)
+
+    def get_all_buses(self):
+        return self.busRepo.get_all()
+
+    def get_bus_details_with_stops(self, bus_id: int):
+        bus = self.busRepo.get_by_id(bus_id)
+        if not bus:
+            return None
+        all_links = self.linkRepo.get_links_ordered_by_rank()
+        bus_links = [link for link in all_links if link.bus.id == bus_id]
+        stops_itinerary = []
+        for link in bus_links:
+            stops_itinerary.append({
+                "stop_id": link.stop.id,
+                "name": link.stop.name,
+                "latitude": link.stop.lat,
+                "longitude": link.stop.lon,
+                "order": link.rank
+            })
+
+        return {
+            "bus_id": bus.id,
+            "bus_name": bus.name,
+            "itinerary": stops_itinerary
+        }
+
