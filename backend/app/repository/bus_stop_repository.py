@@ -16,3 +16,7 @@ class BusStopRepository:
     def update(self, stop: BusStop): return self.dao.update(stop)
 
     def delete(self, stop_id: int): return self.dao.delete(stop_id)
+
+    def get_first_stop(self, bus_id: int): return self.dao.get_first_stop(bus_id)
+
+    def get_last_stop(self, bus_id: int): return self.dao.get_last_stop(bus_id)

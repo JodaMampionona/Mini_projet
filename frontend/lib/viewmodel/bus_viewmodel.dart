@@ -1,18 +1,36 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:frontend/model/bus_model.dart';
+import 'package:frontend/model/place_model.dart';
 
 class BusViewModel extends ChangeNotifier {
   final model = BusModel();
 
-  String errorMsg = '';
+  final searchController = TextEditingController();
+
+  String? errorMsg;
 
   bool _loading = false;
+  bool _busLoading = false;
 
   List<Bus>? _buses;
+  List<Bus> _filteredBuses = [];
 
-  List<Bus> get buses => _buses ?? [];
+  List<Bus> get buses => _filteredBuses;
 
   bool get loading => _loading;
+
+  bool get busLoading => _busLoading;
+
+  List<Place> busStops = [];
+  String selectedBusName = '';
+
+  BusViewModel() {
+    searchController.addListener(_onSearchChanged);
+  }
+
+  Future<void> fetchBus(int id) async {
+    await model.getBus(id);
+  }
 
   void setLoading(bool val) {
     _loading = val;
@@ -25,14 +43,37 @@ class BusViewModel extends ChangeNotifier {
         .getAll()
         .then((res) {
           _buses = res;
-          errorMsg = '';
+          _filteredBuses = List.from(res); // copie initiale
+          errorMsg = null;
         })
         .catchError((e) {
-          print('Oh no!');
           errorMsg = 'Impossible de récupérer la liste des bus';
         })
         .whenComplete(() {
           setLoading(false);
         });
+  }
+
+  void _onSearchChanged() {
+    final query = searchController.text.toLowerCase();
+
+    if (_buses == null) return;
+
+    if (query.isEmpty) {
+      _filteredBuses = List.from(_buses!);
+    } else {
+      _filteredBuses = _buses!
+          .where((bus) => bus.name.toLowerCase().contains(query))
+          .toList();
+    }
+
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_onSearchChanged);
+    searchController.dispose();
+    super.dispose();
   }
 }

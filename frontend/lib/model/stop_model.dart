@@ -14,12 +14,13 @@ class Stop {
   });
 
   factory Stop.fromJson(Map<String, dynamic> json) {
+    final order = json['order'];
     return Stop(
-      id: json['stop_id'] as int,
+      id: json['id'] as int,
       name: json['name'] as String,
-      lat: (json['latitude'] as num).toDouble(),
-      lon: (json['longitude'] as num).toDouble(),
-      order: json['order'] as int,
+      lat: (json['lat'] as num).toDouble(),
+      lon: (json['lon'] as num).toDouble(),
+      order: order == null ? 0 : order as int,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:frontend/constants/app_text_styles.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/widgets/app_text_field.dart';
+import 'package:frontend/widgets/error_message.dart';
 import 'package:provider/provider.dart';
 
 class SearchView extends StatefulWidget {
@@ -52,18 +53,7 @@ class _SearchViewState extends State<SearchView> {
             if (vm.errorMsg != null)
               Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: AppColors.errorBg.withAlpha(60),
-                    child: Text(
-                      vm.errorMsg!,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.errorText,
-                      ),
-                    ),
-                  ),
+                  ErrorMessage(message: vm.errorMsg!),
                   SizedBox(height: 16),
                 ],
               ),

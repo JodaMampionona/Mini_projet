@@ -195,19 +195,23 @@ class BusItineraryService:
         stops_itinerary = []
         for link in bus_links:
             stops_itinerary.append({
-                 "stop_id": link.stop.id,
-                 "name": link.stop.name,
-                 "latitude": link.stop.lat,
-                 "longitude": link.stop.lon,
-                 "order": link.rank
+                "id": link.stop.id,
+                "name": link.stop.name,
+                "lat": link.stop.lat,
+                "lon": link.stop.lon,
+                "order": link.rank
             })
 
         return {
-             "bus_id": bus.id,
-             "bus_name": bus.name,
-             "itinerary": stops_itinerary
+            "bus_id": bus.id,
+            "bus_name": bus.name,
+            "itinerary": stops_itinerary
         }
 
     def get_buses_simple_list(self):
         buses = self.busRepo.get_all()
-        return [{"bus_id": b.id, "bus_name": b.name} for b in buses]
+
+        return [{"bus_id": b.id, "bus_name": b.name, "itinerary" : [
+            self.stopRepo.get_first_stop(b.id),
+            self.stopRepo.get_last_stop(b.id)
+        ]} for b in buses]

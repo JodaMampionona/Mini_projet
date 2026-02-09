@@ -30,6 +30,23 @@ class BusStopDAO(DAOInterface):
             rows = cursor.fetchall()
             return [BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) for row in rows]
 
+    def get_first_stop(self, bus_id: int):
+        with self.helper.get_connection().cursor() as cursor:
+            cursor.execute(
+                "SELECT bs.id, bs.name, bs.lat, bs.lon FROM bus_stops bs JOIN bus_stop_links bsl ON bs.id = bsl.stop_id WHERE bsl.bus_id = %s AND bsl.rank = 1;",
+                (bus_id,))
+            row = cursor.fetchone()
+            return BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) if row else None
+
+    def get_last_stop(self, bus_id: int):
+        with self.helper.get_connection().cursor() as cursor:
+            cursor.execute(
+                "SELECT bs.id, bs.name, bs.lat, bs.lon FROM bus_stops bs JOIN bus_stop_links bsl ON bs.id = bsl.stop_id WHERE bsl.bus_id = %s ORDER BY bsl.rank DESC LIMIT 1;",
+                (bus_id,))
+            row = cursor.fetchone()
+            return BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3]) if row else None
+
+
     # TODO: do not insert ID
     def add(self, stop: BusStop):
         conn = self.helper.get_connection()

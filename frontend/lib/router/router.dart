@@ -181,7 +181,9 @@ final appRouter = GoRouter(
           name: Routes.bus.name,
           path: Routes.bus.path,
           builder: (context, state) {
-            return BusView();
+            return BusView(
+              onItemTap: (List<Place> busStops, String busName) {},
+            );
           },
         ),
       ],
