@@ -1,5 +1,6 @@
 import math
 import networkx as nx
+import requests
 from app.repository.bus_stop_link_repository import BusStopLinkRepository
 from app.repository.bus_stop_repository import BusStopRepository
 from app.repository.bus_repository import BusRepository
@@ -90,7 +91,7 @@ class BusItineraryService:
                     )
 
     # -------------------------
-    # ALGO EXISTANT (INCHANGÉ)
+    # ALGO EXISTANT
     # -------------------------
     def get_bus_itinerary(self, start_id: int, destination_id: int):
         itinerary_named = []
@@ -215,3 +216,44 @@ class BusItineraryService:
             self.stopRepo.get_first_stop(b.id),
             self.stopRepo.get_last_stop(b.id)
         ]} for b in buses]
+
+
+    def search_nearby_stops(self, query: str, radius_km: float = 0.5):
+            # 1. Appel à l'API Photon pour géocoder l'adresse
+            photon_url = f"https://photon.komoot.io/api/?q={query}&limit=1"
+            try:
+                response = requests.get(photon_url)
+                data = response.json()
+
+                if not data['features']:
+                    return {"error": "Lieu non trouvé", "stops": []}
+
+                # Récupération des coordonnées du lieu trouvé
+                # Attention : Photon renvoie [longitude, latitude]
+                lon = data['features'][0]['geometry']['coordinates'][0]
+                lat = data['features'][0]['geometry']['coordinates'][1]
+                place_name = data['features'][0]['properties'].get('name', query)
+
+            except Exception as e:
+                return {"error": f"Erreur API Photon: {str(e)}", "stops": []}
+
+            # 2. Filtrer les arrêts à proximité (500m)
+            all_stops = self.stopRepo.get_all()
+            nearby_stops = []
+
+            for stop in all_stops:
+                dist = self.haversine_distance(lat, lon, stop.lat, stop.lon)
+                if dist <= radius_km:
+                    nearby_stops.append({
+                        "id": stop.id,
+                        "name": stop.name,
+                        "lat": stop.lat,
+                        "lon": stop.lon,
+                        "distance_m": round(dist * 1000) # Distance en mètres
+                    })
+
+            return {
+                "search_place": place_name,
+                "coordinates": {"lat": lat, "lon": lon},
+                "stops": nearby_stops
+            }
