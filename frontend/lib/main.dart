@@ -41,10 +41,7 @@ class MyApp extends StatelessWidget {
           hintStyle: WidgetStatePropertyAll(
             Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.grey50),
-          ),
-          textStyle: WidgetStatePropertyAll(
-            Theme.of(context).textTheme.bodySmall,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.grey50),
           ),
         ),
 
