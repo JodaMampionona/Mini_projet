@@ -216,6 +216,7 @@ class BusItineraryService:
                     nearby_stops.append({
                         "id": stop.id,
                         "name": stop.name,
+                        "bus" : self.busRepo.get_by_stop_id(stop.id),
                         "lat": stop.lat,
                         "lon": stop.lon,
                         "distance_m": round(dist * 1000)

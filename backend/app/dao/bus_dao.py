@@ -30,6 +30,13 @@ class BusDAO(DAOInterface):
             rows = cursor.fetchall()
             return [Bus(id=row[0], name=row[1]) for row in rows]
 
+    def get_by_stop_id(self, stop_id: int):
+        with self.helper.get_connection().cursor() as cursor:
+            cursor.execute(
+                "SELECT b.id, b.name FROM buses b JOIN bus_stop_links l ON b.id = l.bus_id WHERE l.stop_id = %s;", (stop_id,))
+            row = cursor.fetchone()
+            return Bus(id=row[0], name=row[1]) if row else None
+
     # TODO: do not insert ID
     def add(self, bus: Bus):
         conn = self.helper.get_connection()

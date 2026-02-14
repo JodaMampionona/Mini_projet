@@ -17,3 +17,5 @@ class BusRepository:
     def update(self, bus: Bus): return self.dao.update(bus)
 
     def delete(self, bus_id: int): return self.dao.delete(bus_id)
+
+    def get_by_stop_id(self, stop_id: int): return self.dao.get_by_stop_id(stop_id)
