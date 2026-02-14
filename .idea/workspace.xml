@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bd661454-97ca-447b-97a5-9852fd0c6640" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/api/bus_itinerary_route.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/api/bus_itinerary_route.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app/service/bus_itinerary_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/service/bus_itinerary_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/utils/dio_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/utils/dio_util.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
