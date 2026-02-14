@@ -157,17 +157,13 @@ class BusItineraryService:
     # GESTION DES BUS ET RECHERCHE
     # ---------------------------------------------------------
     def get_buses_simple_list(self):
-        """Retourne la liste simplifiée des bus pour l'affichage Flutter."""
         buses = self.busRepo.get_all()
 
-        return [{
-            "bus_id": b.id,
-            "bus_name": b.name,
-            "terminals": [
-                self.stopRepo.get_first_stop(b.id).name if hasattr(self.stopRepo, 'get_first_stop') else "N/A",
-                self.stopRepo.get_last_stop(b.id).name if hasattr(self.stopRepo, 'get_last_stop') else "N/A"
-            ]
-        } for b in buses]
+        return [{"bus_id": b.id, "bus_name": b.name, "itinerary" : [
+            self.stopRepo.get_first_stop(b.id),
+            self.stopRepo.get_last_stop(b.id)
+        ]} for b in buses]
+
 
     def get_bus_details_with_stops(self, bus_id: int):
         """Retourne les détails d'un bus et son itinéraire complet (tous les arrêts)."""
@@ -200,7 +196,7 @@ class BusItineraryService:
         photon_url = f"https://photon.komoot.io/api/?q={query}&limit=1&lat=-18.8792&lon=47.5079"
 
         try:
-            response = requests.get(photon_url, timeout=5)
+            response = requests.get(photon_url, timeout=5, headers={"User-Agent": "beTax/1.0"})
             data = response.json()
 
             if not data['features']:
