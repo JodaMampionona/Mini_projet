@@ -12,8 +12,8 @@ class Bus {
     final itinerary = json['itinerary'];
 
     return Bus(
-      id: json['bus_id'] as int,
-      name: json['bus_name'] as String,
+      id: json['id'] as int,
+      name: json['name'] as String,
       stops: itinerary == null || itinerary[0] == null
           ? <Stop>[]
           : (itinerary as List<dynamic>)
@@ -25,12 +25,12 @@ class Bus {
 
 class BusModel {
   Future<Bus> getBus(int id) async {
-    final response = await dio.get('$apiAuthority/itinerary/bus?bus_id=$id');
+    final response = await dio.get('/itinerary/bus?bus_id=$id');
     return Bus.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<List<Bus>> getAll() async {
-    final response = await dio.get('$apiAuthority/itinerary/bus/');
+    final response = await dio.get('/itinerary/bus/');
     return (response.data as List<dynamic>)
         .map((e) => Bus.fromJson(e as Map<String, dynamic>))
         .toList();

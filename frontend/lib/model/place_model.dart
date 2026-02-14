@@ -1,4 +1,3 @@
-import 'package:frontend/services/photon_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 class Place {
@@ -13,28 +12,10 @@ class Place {
     required this.lat,
     required this.lon,
   });
-
-  factory Place.fromJson(Map<String, dynamic> json) {
-    return Place(
-      name: json['properties']['name'] ?? '',
-      city: json['properties']['city'],
-      lat: json['geometry']['coordinates'][1],
-      lon: json['geometry']['coordinates'][0],
-    );
-  }
 }
 
 class PlaceModel {
   List<Place> places = [];
-
-  Future<List<Place>> fetchPlacesByName(String? name) async {
-    try {
-      places = await PhotonService.search(name);
-      return places;
-    } catch (e) {
-      return Future.error('Connexion internet instable.');
-    }
-  }
 
   Future<Place> getCurrentLocation() async {
     bool serviceEnabled;
@@ -64,7 +45,7 @@ class PlaceModel {
     final position = await Geolocator.getCurrentPosition();
 
     return Place(
-      name: 'Ma position actuelle',
+      name: 'ma position',
       city: 'Antananarivo',
       lat: position.latitude,
       lon: position.longitude,

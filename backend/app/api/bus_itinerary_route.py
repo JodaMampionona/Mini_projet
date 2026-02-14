@@ -11,9 +11,10 @@ def get_bus_itinerary_by_gps(start_lat: float, start_lon: float, destination_lat
     return service.get_bus_itinerary_by_gps(
         start_lat=start_lat,
         start_lon=start_lon,
-        destination_lat=destination_lat,
-        destination_lon=destination_lon
+        dest_lat=destination_lat,
+        dest_lon=destination_lon
     )
+
 # endpoint pour /bus et /bus/?bus_id
 @router.get("/bus")
 def get_buses(bus_id: Optional[int] = Query(None)):
@@ -24,10 +25,17 @@ def get_buses(bus_id: Optional[int] = Query(None)):
         return bus_details
     return service.get_buses_simple_list()
 
+
 @router.get("/search")
-def search_stops(q: str = Query(..., description="Le nom du lieu à rechercher")):
-    result = service.search_nearby_stops(q)
+def search_stops(q: Optional[str] = Query(None, description="Le nom du lieu à rechercher"), lat: Optional[float] = Query(None), lon: Optional[float] = Query(None)):
+    if q is not None:
+        result = service.search_nearby_stops_by_name(q)
+    elif lat is not None and lon is not None:
+        result = service.search_nearby_stops_by_lat_lon(lat, lon)
+    else:
+        raise HTTPException(
+            status_code=400, detail="Fournir soit 'q' soit 'lat' et 'lon'")
+
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
-

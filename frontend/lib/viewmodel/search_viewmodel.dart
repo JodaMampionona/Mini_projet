@@ -1,11 +1,14 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 
 class SearchViewModel extends ChangeNotifier {
-  final model = PlaceModel();
-  List<Place> places = [];
-  Place? currentLocation;
+  final placeModel = PlaceModel();
+  final stopModel = StopModel();
+
+  SearchResponse? searchResponse;
 
   String? errorMsg;
 
@@ -29,24 +32,39 @@ class SearchViewModel extends ChangeNotifier {
     safeNotifyListeners();
 
     try {
-      final result = await model.fetchPlacesByName(query);
-      places = _uniqueByNameAndCity(result);
+      SearchResponse? result = await stopModel.getStopsByPlaceName(query);
+      if (result != null) {
+        searchResponse = result.copyWith(stops: _unique(result.stops));
+      }
       errorMsg = null;
     } catch (e) {
       errorMsg = e.toString();
-      places = [];
+      searchResponse = null;
     } finally {
       loading = false;
       safeNotifyListeners();
     }
   }
 
-  Future<void> getCurrentLocation() async {
+  Future<void> fetchPlacesByPosition() async {
+    try {
+      final position = await _getCurrentLocation();
+      if (position != null) {
+        searchResponse = await stopModel.getStopsNearPlace(position);
+      }
+    } catch (e) {
+      errorMsg = 'Impossible de récupérer les arrêts proches de vous.';
+    } finally {
+      safeNotifyListeners();
+    }
+  }
+
+  Future<Place?> _getCurrentLocation() async {
     try {
       positionLoading = true;
       errorMsg = null;
       safeNotifyListeners();
-      currentLocation = await model.getCurrentLocation();
+      return await placeModel.getCurrentLocation();
     } catch (e) {
       errorMsg = e.toString();
       safeNotifyListeners();
@@ -54,6 +72,7 @@ class SearchViewModel extends ChangeNotifier {
       positionLoading = false;
       safeNotifyListeners();
     }
+    return null;
   }
 
   void requestInputFocus() {
@@ -66,28 +85,33 @@ class SearchViewModel extends ChangeNotifier {
     }
   }
 
+  String _previousText = '';
+
   void _onSearchChanged() {
     _debounce?.cancel();
 
+    final currentText = placeController.text.trim();
+    if (currentText == _previousText) return; // pas de changement réel
+
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      final query = placeController.text.trim();
-      fetchPlaces(query);
+      _previousText = currentText;
+      fetchPlaces(currentText);
     });
   }
 
-  List<Place> _uniqueByNameAndCity(List<Place> places) {
+  List<Stop> _unique(List<Stop> stops) {
     final seen = <String>{};
-    final uniquePlaces = <Place>[];
+    final uniqueStops = <Stop>[];
 
-    for (var p in places) {
-      final key = '${p.name}-${p.city}';
-      if (!seen.contains(key) && p.name.trim().isNotEmpty) {
+    for (final stop in stops) {
+      final key = '${stop.name}_${stop.bus?.id ?? 'null'}';
+      if (!seen.contains(key)) {
         seen.add(key);
-        uniquePlaces.add(p);
+        uniqueStops.add(stop);
       }
     }
 
-    return uniquePlaces;
+    return uniqueStops;
   }
 
   @override

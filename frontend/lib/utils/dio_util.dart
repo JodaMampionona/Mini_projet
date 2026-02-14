@@ -10,7 +10,7 @@ final dio =
         BaseOptions(
           connectTimeout: const Duration(seconds: 5),
           receiveTimeout: const Duration(seconds: 5),
-          baseUrl: '',
+          baseUrl: '$apiAuthority$apiPrefix',
           headers: {
             Headers.contentTypeHeader: 'application/json',
             'User-Agent': 'beTax/1.0',

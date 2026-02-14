@@ -6,6 +6,7 @@ from app.repository.bus_stop_repository import BusStopRepository
 from app.repository.bus_repository import BusRepository
 from app.model.bus_stop_model import BusStop
 
+
 class BusItineraryService:
 
     def __init__(self):
@@ -73,7 +74,8 @@ class BusItineraryService:
             all_stops.update(stops)
 
         for stop_id in all_stops:
-            buses = [bus_id for bus_id, stops in arrets_par_bus.items() if stop_id in stops]
+            buses = [bus_id for bus_id, stops in arrets_par_bus.items()
+                     if stop_id in stops]
             for i in range(len(buses)):
                 for j in range(i + 1, len(buses)):
                     self.graph.add_edge(
@@ -100,10 +102,12 @@ class BusItineraryService:
         for s in start_nodes:
             for e in end_nodes:
                 try:
-                    cost = nx.dijkstra_path_length(self.graph, s, e, weight="weight")
+                    cost = nx.dijkstra_path_length(
+                        self.graph, s, e, weight="weight")
                     if cost < best_cost:
                         best_cost = cost
-                        best_path = nx.dijkstra_path(self.graph, s, e, weight="weight")
+                        best_path = nx.dijkstra_path(
+                            self.graph, s, e, weight="weight")
                 except nx.NetworkXNoPath:
                     continue
 
@@ -159,11 +163,10 @@ class BusItineraryService:
     def get_buses_simple_list(self):
         buses = self.busRepo.get_all()
 
-        return [{"bus_id": b.id, "bus_name": b.name, "itinerary" : [
+        return [{"id": b.id, "name": b.name, "itinerary": [
             self.stopRepo.get_first_stop(b.id),
             self.stopRepo.get_last_stop(b.id)
         ]} for b in buses]
-
 
     def get_bus_details_with_stops(self, bus_id: int):
         """Retourne les détails d'un bus et son itinéraire complet (tous les arrêts)."""
@@ -185,18 +188,43 @@ class BusItineraryService:
             })
 
         return {
-            "bus_id": bus.id,
-            "bus_name": bus.name,
+            "id": bus.id,
+            "name": bus.name,
             "itinerary": stops_itinerary
         }
 
-    def search_nearby_stops(self, query: str, radius_km: float = 0.5):
+    def search_nearby_stops_by_lat_lon(self, lat: float, lon: float, radius_km: float = 0.5):
+        """Recherche les arrêts proches d'une position GPS donnée."""
+        all_stops = self.stopRepo.get_all()
+        nearby_stops = []
+
+        for stop in all_stops:
+            dist = self.haversine_distance(lat, lon, stop.lat, stop.lon)
+            if dist <= radius_km:
+                nearby_stops.append({
+                    "id": stop.id,
+                    "name": stop.name,
+                    "bus": self.busRepo.get_by_stop_id(stop.id),
+                    "lat": stop.lat,
+                    "lon": stop.lon,
+                    "distance": round(dist * 1000)
+                })
+
+        nearby_stops.sort(key=lambda x: x['distance'])
+        return {
+            "search_place" : "",
+            "coordinates" : {"lat": lat, "lon": lon},
+            "stops": nearby_stops
+        }
+
+    def search_nearby_stops_by_name(self, query: str, radius_km: float = 0.5):
         """Recherche un lieu via Photon (focus Tana) et trouve les arrêts proches."""
         # Priorité Antananarivo : lat=-18.8792, lon=47.5079
         photon_url = f"https://photon.komoot.io/api/?q={query}&limit=1&lat=-18.8792&lon=47.5079"
 
         try:
-            response = requests.get(photon_url, timeout=5, headers={"User-Agent": "beTax/1.0"})
+            response = requests.get(photon_url, timeout=5, headers={
+                                    "User-Agent": "beTax/1.0"})
             data = response.json()
 
             if not data['features']:
@@ -216,12 +244,11 @@ class BusItineraryService:
                     nearby_stops.append({
                         "id": stop.id,
                         "name": stop.name,
-                        "bus" : self.busRepo.get_by_stop_id(stop.id),
+                        "bus": self.busRepo.get_by_stop_id(stop.id),
                         "lat": stop.lat,
                         "lon": stop.lon,
                         "distance_m": round(dist * 1000)
                     })
-
 
             nearby_stops.sort(key=lambda x: x['distance_m'])
 

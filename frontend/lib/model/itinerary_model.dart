@@ -37,7 +37,7 @@ class ItineraryModel {
   Future<List<Itinerary>?> getItinerary(Place start, Place destination) async {
     try {
       final response = await dio.get(
-        '$apiAuthority${apiPrefix}itinerary/',
+        '/itinerary/',
         queryParameters: {
           'start_lat': start.lat,
           'start_lon': start.lon,
