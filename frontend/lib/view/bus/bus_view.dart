@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/viewmodel/bus_viewmodel.dart';
 import 'package:frontend/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
 
 class BusView extends StatefulWidget {
-  final Function(List<Place> busStops, String busName) onItemTap;
+  final Function(List<Stop> busStops, String busName) onItemTap;
 
   const BusView({super.key, required this.onItemTap});
 
@@ -42,13 +42,26 @@ class _BusViewState extends State<BusView> {
             child: SizedBox(
               height: 48,
               child: AppTextField(
+                icon: Icons.search,
                 hintText: 'Rechercher un bus',
                 controller: vm.searchController,
               ),
             ),
           ),
 
-          vm.loading
+          vm.busLoading
+              ? Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 32,
+                      children: [
+                        CircularProgressIndicator(color: AppColors.primaryMain),
+                      ],
+                    ),
+                  ),
+                )
+              : vm.loading
               ? Expanded(
                   child: Center(
                     child: Column(
@@ -79,91 +92,105 @@ class _BusViewState extends State<BusView> {
                 )
               : Expanded(
                   child: ListView(
+                    padding: EdgeInsets.symmetric(vertical: 8),
                     children: vm.buses.map((bus) {
                       final primus = bus.stops.firstOrNull;
                       final terminus = bus.stops.lastOrNull;
 
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(4),
-                              ),
-                              tileColor: AppColors.componentBg,
-                              title: Column(
-                                spacing: 8,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    bus.name,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 2,
+                        ),
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                await vm.fetchBus(bus.id);
+                                widget.onItemTap(
+                                  vm.busStops,
+                                  vm.selectedBusName,
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.componentBg,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    spacing: 8,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Column(
-                                        spacing: 4,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      Text(
+                                        bus.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge,
+                                      ),
+
+                                      Divider(color: AppColors.grey95),
+
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          SizedBox(
-                                            width: 150,
-                                            child: Text(
-                                              'Primus : ${primus?.name ?? ''}',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.bodySmall,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 150,
-                                            child: Text(
-                                              'Terminus : ${terminus?.name ?? ''}',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.bodySmall,
-                                            ),
+                                          Column(
+                                            spacing: 4,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              info(
+                                                'Primus',
+                                                primus?.name ?? 'aucune donnée',
+                                              ),
+                                              info(
+                                                'Terminus',
+                                                terminus?.name ??
+                                                    'aucune donnée',
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          foregroundColor:
-                                              AppColors.primaryShade50,
-                                        ),
-                                        onPressed: () {
-                                          widget.onItemTap(<Place>[], '');
-                                        },
-                                        child: Row(
-                                          spacing: 4,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            Text('Voir sur la carte'),
-                                            SizedBox(width: 4),
-                                            Icon(Icons.arrow_forward, size: 18),
-                                          ],
-                                        ),
-                                      ),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 4),
-                        ],
+                            SizedBox(height: 16),
+                          ],
+                        ),
                       );
                     }).toList(),
                   ),
                 ),
         ],
       ),
+    );
+  }
+
+  Widget info(String label, String value) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(
+          '$label : ',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.secondaryMain),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodySmall,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:frontend/model/bus_model.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 
 class BusViewModel extends ChangeNotifier {
   final model = BusModel();
@@ -21,19 +21,20 @@ class BusViewModel extends ChangeNotifier {
 
   bool get busLoading => _busLoading;
 
-  List<Place> busStops = [];
+  List<Stop> busStops = [];
   String selectedBusName = '';
 
   BusViewModel() {
     searchController.addListener(_onSearchChanged);
   }
 
-  Future<void> fetchBus(int id) async {
-    await model.getBus(id);
-  }
-
   void setLoading(bool val) {
     _loading = val;
+    notifyListeners();
+  }
+
+  void setBusLoading(bool val) {
+    _busLoading = val;
     notifyListeners();
   }
 
@@ -52,6 +53,20 @@ class BusViewModel extends ChangeNotifier {
         .whenComplete(() {
           setLoading(false);
         });
+  }
+
+  Future<void> fetchBus(int id) async {
+    try {
+      setBusLoading(true);
+      final result = await model.getBus(id);
+      busStops = result.stops;
+      selectedBusName = result.name;
+      errorMsg = null;
+    } catch (e) {
+      errorMsg = 'Vérifiez votre connexion internet';
+    } finally {
+      setBusLoading(false);
+    }
   }
 
   void _onSearchChanged() {

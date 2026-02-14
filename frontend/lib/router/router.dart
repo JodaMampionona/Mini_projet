@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';
 import 'package:frontend/services/app_preferences_service.dart';
 import 'package:frontend/view/bus/bus_view.dart';
+import 'package:frontend/view/bus_stops_map/bus_stops_map.dart';
 import 'package:frontend/view/home/home_view.dart';
 import 'package:frontend/view/itinerary/itinerary_view.dart';
 import 'package:frontend/view/map/map_view.dart';
@@ -90,6 +92,19 @@ final appRouter = GoRouter(
             onNewItineraryTap: (context) => context.goNamed(Routes.home.path),
           ),
         );
+      },
+    ),
+
+    // bus stops and map
+    GoRoute(
+      name: Routes.busStopMap.name,
+      path: Routes.busStopMap.path,
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, dynamic>?;
+        final stops = extraData?['stops'] ?? [];
+        final busName = extraData?['busName'] ?? '';
+
+        return BusStopsMap(stops: stops, busName: busName);
       },
     ),
 
@@ -182,7 +197,12 @@ final appRouter = GoRouter(
           path: Routes.bus.path,
           builder: (context, state) {
             return BusView(
-              onItemTap: (List<Place> busStops, String busName) {},
+              onItemTap: (List<Stop> busStops, String busName) {
+                context.pushNamed(
+                  Routes.busStopMap.name,
+                  extra: {'busName': busName, 'stops': busStops},
+                );
+              },
             );
           },
         ),
