@@ -31,4 +31,3 @@ def search_stops(q: str = Query(..., description="Le nom du lieu à rechercher")
         raise HTTPException(status_code=404, detail=result["error"])
     return result
 
-et ici es-ce que toute est ok ?
