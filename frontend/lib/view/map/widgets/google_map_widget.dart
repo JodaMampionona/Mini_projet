@@ -7,17 +7,31 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapWidget extends StatefulWidget {
   final List<Itinerary> itinerary;
+  final bool compassEnabled;
+  final bool showIntermediateStops;
 
-  const GoogleMapWidget({super.key, required this.itinerary});
+  const GoogleMapWidget({
+    super.key,
+    required this.itinerary,
+    required this.compassEnabled,
+    required this.showIntermediateStops,
+  });
 
   @override
   State<GoogleMapWidget> createState() => GoogleMapWidgetState();
 }
 
 class GoogleMapWidgetState extends State<GoogleMapWidget> {
-  late BitmapDescriptor stopMarkerIcon;
+  late BitmapDescriptor startMarkerIcon;
+  late BitmapDescriptor endMarkerIcon;
+  late BitmapDescriptor transferMarker;
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+
+  final ClusterManager _myCluster = ClusterManager(
+    clusterManagerId: ClusterManagerId('my cluster'),
+  );
 
   @override
   void initState() {
@@ -25,20 +39,13 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     _loadMarkerIcon();
   }
 
-  Future<void> _loadMarkerIcon() async {
-    stopMarkerIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(28, 28)),
-      'assets/images/bus_marker.png',
-    );
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     final itineraryPolylines = _getPolylines(widget.itinerary);
-    final markers = _getMarkers(widget.itinerary);
+    final markers = _getMarkers(widget.itinerary, widget.showIntermediateStops);
 
     return GoogleMap(
+      compassEnabled: widget.compassEnabled,
       mapType: MapType.normal,
       polylines: itineraryPolylines,
       markers: markers,
@@ -71,7 +78,23 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     );
   }
 
-  /// Création de la polyline
+  Future<void> _loadMarkerIcon() async {
+    startMarkerIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(28, 28)),
+      'assets/images/start_marker.png',
+    );
+    endMarkerIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(28, 28)),
+      'assets/images/end_marker.png',
+    );
+    transferMarker = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(28, 28)),
+      'assets/images/transfer_marker.png',
+    );
+    setState(() {});
+  }
+
+  // Création de la polyline
   Set<Polyline> _getPolylines(List<Itinerary> itinerary) {
     if (itinerary.isEmpty) return {};
 
@@ -90,13 +113,13 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
         polylineId: const PolylineId('itinerary'),
         points: polylinePoints,
         color: AppColors.secondaryMain,
-        width: 9,
+        width: 7,
       ),
     };
   }
 
   // Create markers for start, end, and in-between
-  Set<Marker> _getMarkers(List<Itinerary> itinerary) {
+  Set<Marker> _getMarkers(List<Itinerary> itinerary, bool getIntermediate) {
     if (itinerary.isEmpty) return <Marker>{};
 
     final markers = <Marker>{};
@@ -105,22 +128,42 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
       final point = itinerary[i];
       var position = LatLng(point.startLat, point.startLon);
 
-      markers.add(
-        Marker(
-          markerId: MarkerId('marker_${i}_${point.from}'),
-          position: position,
-          infoWindow: InfoWindow(title: point.from),
-          icon: BitmapDescriptor.defaultMarkerWithHue(45),
-        ),
-      );
+      // start
+      if (i == 0) {
+        markers.add(
+          Marker(
+            anchor: Offset(0.5, 0.5),
+            markerId: MarkerId('marker_${i}_${point.from}'),
+            position: position,
+            infoWindow: InfoWindow(title: point.from),
+            icon: startMarkerIcon,
+          ),
+        );
+        continue;
+      }
 
+      // end
       if (i == itinerary.length - 1) {
         markers.add(
           Marker(
+            anchor: Offset(0.5, 0.5),
             markerId: MarkerId('marker_${i}_${point.to}'),
             position: LatLng(point.endLat, point.endLon),
             infoWindow: InfoWindow(title: point.to),
-            icon: BitmapDescriptor.defaultMarkerWithHue(45),
+            icon: endMarkerIcon,
+          ),
+        );
+        continue;
+      }
+
+      if (getIntermediate) {
+        markers.add(
+          Marker(
+            anchor: Offset(0.5, 0.5),
+            markerId: MarkerId('marker_${i}_${point.from}'),
+            position: position,
+            infoWindow: InfoWindow(title: point.from),
+            icon: transferMarker,
           ),
         );
       }

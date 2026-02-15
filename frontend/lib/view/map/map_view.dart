@@ -58,7 +58,11 @@ class _MapViewState extends State<MapView> {
               child: Stack(
                 children: [
                   // map
-                  GoogleMapWidget(itinerary: vm.itinerary),
+                  GoogleMapWidget(
+                    itinerary: vm.itinerary,
+                    compassEnabled: true,
+                    showIntermediateStops: true,
+                  ),
 
                   // bottom link
                   vm.loading

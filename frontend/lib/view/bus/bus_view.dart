@@ -115,7 +115,7 @@ class _BusViewState extends State<BusView> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: AppColors.componentBg,
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
@@ -124,15 +124,50 @@ class _BusViewState extends State<BusView> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        bus.name,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyLarge,
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                              color: AppColors.grey95,
+                                            ),
+                                            left: BorderSide(
+                                              color: AppColors.grey95,
+                                            ),
+                                            right: BorderSide(
+                                              color: AppColors.grey95,
+                                            ),
+                                            bottom: BorderSide(
+                                              color: AppColors.primaryMain,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            spacing: 8,
+                                            children: [
+                                              Icon(
+                                                Icons.directions_bus,
+                                                color: AppColors.grey70,
+                                                size: 18,
+                                              ),
+                                              Text(
+                                                bus.name,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      color: AppColors
+                                                          .secondaryMain,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-
-                                      Divider(color: AppColors.grey95),
 
                                       Row(
                                         mainAxisAlignment:
