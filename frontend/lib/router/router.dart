@@ -25,6 +25,7 @@ import 'package:provider/provider.dart';
 final appRouter = GoRouter(
   initialLocation: Routes.onBoarding.path,
   redirect: (context, state) {
+    return null;
     final isFirstTime = AppPreferences.isFirstTime;
 
     final isOnboarding = state.matchedLocation == Routes.onBoarding.path;

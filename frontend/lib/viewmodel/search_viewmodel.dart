@@ -38,7 +38,7 @@ class SearchViewModel extends ChangeNotifier {
       }
       errorMsg = null;
     } catch (e) {
-      errorMsg = e.toString();
+      errorMsg = "Vérifiez votre connexion internet.";
       searchResponse = null;
     } finally {
       loading = false;
@@ -66,7 +66,7 @@ class SearchViewModel extends ChangeNotifier {
       safeNotifyListeners();
       return await placeModel.getCurrentLocation();
     } catch (e) {
-      errorMsg = e.toString();
+      errorMsg = "Impossible de récupérer les arrêts proches de vous.";
       safeNotifyListeners();
     } finally {
       positionLoading = false;

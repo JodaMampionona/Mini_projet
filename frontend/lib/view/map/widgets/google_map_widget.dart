@@ -139,7 +139,32 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             icon: startMarkerIcon,
           ),
         );
+
+        if (itinerary.length == 1) {
+          markers.add(
+            Marker(
+              anchor: Offset(0.5, 0.5),
+              markerId: MarkerId('marker_${i}_${point.to}'),
+              position: LatLng(point.endLat, point.endLon),
+              infoWindow: InfoWindow(title: point.to),
+              icon: endMarkerIcon,
+            ),
+          );
+        }
+
         continue;
+      }
+
+      if (i == itinerary.length - 1 && getIntermediate) {
+        markers.add(
+          Marker(
+            anchor: Offset(0.5, 0.5),
+            markerId: MarkerId('marker_${i}_${point.to}'),
+            position: LatLng(point.startLat, point.startLon),
+            infoWindow: InfoWindow(title: point.to),
+            icon: transferMarker,
+          ),
+        );
       }
 
       // end
