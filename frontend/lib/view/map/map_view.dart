@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app_colors.dart';
@@ -13,6 +14,8 @@ class MapView extends StatefulWidget {
   final Place? end;
   final Function(BuildContext, MapViewModel) onSeeItineraryTap;
   final Function(BuildContext) onBackTap;
+  final Function(BuildContext, MapViewModel) onStartTap;
+  final Function(BuildContext, MapViewModel) onEndTap;
 
   const MapView({
     super.key,
@@ -20,6 +23,8 @@ class MapView extends StatefulWidget {
     required this.end,
     required this.onSeeItineraryTap,
     required this.onBackTap,
+    required this.onStartTap,
+    required this.onEndTap,
   });
 
   @override
@@ -29,13 +34,15 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
   @override
   void initState() {
+    final vm = context.read<MapViewModel>();
+
+    if (widget.start != null) {
+      vm.updateStartController(widget.start);
+    }
+    if (widget.end != null) {
+      vm.updateDestController(widget.end);
+    }
     super.initState();
-    if (widget.start == null || widget.end == null) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MapViewModel>()
-        ..updateControllers(start: widget.start!.name, dest: widget.end!.name)
-        ..getItinerary(widget.start!, widget.end!);
-    });
   }
 
   @override
@@ -48,22 +55,26 @@ class _MapViewState extends State<MapView> {
           children: [
             // inputs on top
             TopInputs(
+              onSwapPress: () => vm.swapStartAndDestination(),
               onBackTap: () => widget.onBackTap(context),
               startController: vm.startController,
               destController: vm.destController,
-              onSearchTap: () => vm.getItinerary(widget.start!, widget.end!),
+              onSearchTap: () => vm.getItinerary(),
+              onStartTap: () => widget.onStartTap(context, vm),
+              onEndTap: () => widget.onEndTap(context, vm),
             ),
 
             Expanded(
               child: Stack(
                 children: [
                   // map
-                  GoogleMapWidget(
-                    itinerary: vm.itinerary,
-                    compassEnabled: true,
-                    showIntermediateStops: true,
-                  ),
-
+                  vm.loading
+                      ? Container()
+                      : GoogleMapWidget(
+                          itinerary: vm.itinerary,
+                          compassEnabled: true,
+                          showIntermediateStops: true,
+                        ),
                   // bottom link
                   vm.loading
                       ? Center(
@@ -71,9 +82,22 @@ class _MapViewState extends State<MapView> {
                             color: AppColors.secondaryMain,
                           ),
                         )
-                      : Align(
-                          alignment: Alignment.bottomCenter,
-                          child: _bottomCard(vm),
+                      : Positioned(
+                          bottom: 16,
+                          right: 16,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              widget.onSeeItineraryTap(context, vm);
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Voir itinéraire"),
+                                SizedBox(width: 8),
+                                Icon(Icons.route),
+                              ],
+                            ),
+                          ),
                         ),
                 ],
               ),

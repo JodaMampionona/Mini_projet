@@ -41,6 +41,7 @@ class _SearchViewState extends State<SearchView> {
         leading: BackButton(),
         scrolledUnderElevation: 0,
         title: AppTextField(
+          validator: null,
           hintText: widget.inputPlaceholder,
           focusNode: vm.focusNode,
           controller: vm.placeController,

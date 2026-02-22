@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppPreferences.init();
+  await AppPreferencesService.init();
   runApp(const MyApp());
 }
 
@@ -26,17 +26,21 @@ class MyApp extends StatelessWidget {
         // button
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
+            elevation: 0,
             backgroundColor: AppColors.secondaryMain,
             foregroundColor: AppColors.primaryTint100,
+            shadowColor: Colors.transparent,
           ),
         ),
 
         // searchbar
         searchBarTheme: SearchBarThemeData(
+          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 16)),
           elevation: const WidgetStatePropertyAll(0),
           backgroundColor: const WidgetStatePropertyAll(AppColors.grey95),
+          constraints: BoxConstraints(minHeight: 60),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
           ),
           hintStyle: WidgetStatePropertyAll(
             Theme.of(

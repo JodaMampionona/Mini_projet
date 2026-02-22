@@ -8,8 +8,7 @@ class MapViewModel extends ChangeNotifier {
 
   bool loading = false;
   Place? start;
-  Place? dest;
-  String? errorMsg;
+  Place? end;
 
   // controllers
   final TextEditingController startController = TextEditingController();
@@ -20,21 +19,51 @@ class MapViewModel extends ChangeNotifier {
     if (dest != null) destController.text = dest;
   }
 
+  void swapStartAndDestination() {
+    // swap controller values
+    var startValue = startController.text;
+    startController.text = destController.text;
+    destController.text = startValue;
+
+    // swap id values
+    var tmp = start;
+    start = end;
+    end = tmp;
+    notifyListeners();
+  }
+
+  void updateStartController(Place? place) {
+    if (place == null) return;
+    startController.text = place.name;
+    start = place;
+    notifyListeners();
+  }
+
+  void updateDestController(Place? place) {
+    if (place == null) return;
+    destController.text = place.name;
+    end = place;
+    notifyListeners();
+  }
+
   void setLoading(bool value) {
     loading = value;
     notifyListeners();
   }
 
-  void getItinerary(Place start, Place dest) {
+  void getItinerary() {
+    if (start == null || end == null) return;
     setLoading(true);
-    model.getItinerary(start, dest).then((result) {
-      if (result != null) {
-        itinerary = result;
-      } else {
-        errorMsg = "Impossible de récupérer l'itinéraire";
-      }
-      setLoading(false);
-    });
+    model
+        .getItinerary(start!, end!)
+        .then((result) {
+          if (result != null) {
+            itinerary = result;
+          }
+        })
+        .whenComplete(() {
+          setLoading(false);
+        });
   }
 
   @override

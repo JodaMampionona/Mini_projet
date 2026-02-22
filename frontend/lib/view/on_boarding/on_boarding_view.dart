@@ -5,20 +5,19 @@ import 'package:frontend/view/on_boarding/widgets/page_slider.dart';
 import 'package:frontend/viewmodel/on_boarding_viewmodel.dart';
 
 class OnBoardingView extends StatelessWidget {
-  final Function(BuildContext, OnBoardingViewModel) onConfirmPress;
+  final Function(BuildContext) onConfirmPress;
 
   const OnBoardingView({super.key, required this.onConfirmPress});
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = OnBoardingViewModel();
     return Scaffold(
       body: SafeArea(
         child: PageSlider(
           prevBtnLabel: 'Préc.',
           nextBtnLabel: 'Suivant',
           finalBtnLabel: "C'est parti !",
-          onConfirmPress: (context) => onConfirmPress(context, viewModel),
+          onConfirmPress: (context) => onConfirmPress(context),
           pages: [
             OnBoardingSliderPage(
               title: "Bienvenue sur BeTax ",

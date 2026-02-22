@@ -42,6 +42,7 @@ class _BusViewState extends State<BusView> {
             child: SizedBox(
               height: 48,
               child: AppTextField(
+                validator: null,
                 icon: Icons.search,
                 hintText: 'Rechercher un bus',
                 controller: vm.searchController,

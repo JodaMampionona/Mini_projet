@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
+import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/session_model.dart';
 import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';
@@ -16,7 +17,6 @@ import 'package:frontend/viewmodel/bus_viewmodel.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:frontend/viewmodel/map_viewmodel.dart';
-import 'package:frontend/viewmodel/on_boarding_viewmodel.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/widgets/nav_bar.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +26,7 @@ final appRouter = GoRouter(
   initialLocation: Routes.onBoarding.path,
   redirect: (context, state) {
     return null;
-    final isFirstTime = AppPreferences.isFirstTime;
+    final isFirstTime = SessionModel.isFirstTime;
 
     final isOnboarding = state.matchedLocation == Routes.onBoarding.path;
 
@@ -45,16 +45,8 @@ final appRouter = GoRouter(
     GoRoute(
       name: Routes.onBoarding.name,
       path: Routes.onBoarding.path,
-      builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => OnBoardingViewModel(),
-        child: OnBoardingView(
-          onConfirmPress: (context, viewModel) async {
-            await viewModel.logUserIn();
-            if (context.mounted) {
-              context.goNamed(Routes.home.name);
-            }
-          },
-        ),
+      builder: (context, state) => OnBoardingView(
+        onConfirmPress: (context) => context.goNamed(Routes.home.name),
       ),
     ),
 
@@ -64,14 +56,23 @@ final appRouter = GoRouter(
       path: Routes.search.path,
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>?;
-        final placeHolder = extraData?['placeholder'] ?? 'Rechercher';
-        final showGeolocationPrompt = extraData?['showLocationPrompt'] ?? true;
+        final isStart = extraData?['isStart'] ?? true;
+        final from = extraData?['from'] ?? '';
         return ChangeNotifierProvider(
           create: (_) => SearchViewModel(),
           child: SearchView(
-            showGeolocationPrompt: showGeolocationPrompt,
-            inputPlaceholder: placeHolder as String,
-            onPlaceTap: (place) => context.pop(place),
+            showGeolocationPrompt: isStart,
+            inputPlaceholder: isStart
+                ? 'Où vous trouvez-vous ?'
+                : 'Où voulez-vous aller ?',
+            onPlaceTap: (place) {
+              final extra = {isStart ? 'start' : 'end': place};
+              if ((from as String).startsWith(Routes.home.name)) {
+                context.goNamed(Routes.map.name, extra: extra);
+              } else {
+                context.pop(place);
+              }
+            },
           ),
         );
       },
@@ -90,7 +91,7 @@ final appRouter = GoRouter(
           child: ItineraryView(
             itinerary: itinerary,
             onBackPress: (context) => context.pop(),
-            onNewItineraryTap: (context) => context.goNamed(Routes.home.path),
+            onNewItineraryTap: (context) => context.goNamed(Routes.map.name),
           ),
         );
       },
@@ -142,31 +143,11 @@ final appRouter = GoRouter(
           name: Routes.home.name,
           path: Routes.home.path,
           builder: (context, state) => HomeView(
-            onSearchItineraryPress: (context, viewModel) {
-              context.goNamed(
-                Routes.map.name,
-                extra: {'start': viewModel.start, 'end': viewModel.destination},
-              );
-            },
-            onStartTap: (context, vm) async {
-              final place = await context.pushNamed<Place>(
+            onSearchItineraryPress: (context) {
+              context.pushNamed(
                 Routes.search.name,
-                extra: {
-                  'placeholder': 'Où vous trouvez-vous ?',
-                  'showLocationPrompt': true,
-                },
+                extra: {'isStart': false, 'from': Routes.home.name},
               );
-              vm.updateStartController(place);
-            },
-            onDestinationTap: (context, vm) async {
-              final place = await context.pushNamed<Place>(
-                Routes.search.name,
-                extra: {
-                  'placeholder': 'Où voulez-vous aller ?',
-                  'showLocationPrompt': false,
-                },
-              );
-              vm.updateDestController(place);
             },
           ),
         ),
@@ -175,19 +156,32 @@ final appRouter = GoRouter(
           name: Routes.map.name,
           path: Routes.map.path,
           builder: (context, state) {
-            final extraData = state.extra as Map<String, Place?>?;
+            final extraData = state.extra as Map<String, dynamic>?;
             final start = extraData?['start'];
-            final dest = extraData?['end'];
-
+            final end = extraData?['end'];
             return MapView(
               start: start,
-              end: dest,
+              end: end,
               onBackTap: (context) => context.goNamed(Routes.home.path),
               onSeeItineraryTap: (context, viewModel) {
                 context.pushNamed(
                   Routes.itinerary.name,
                   extra: {'itinerary': viewModel.itinerary},
                 );
+              },
+              onStartTap: (context, vm) async {
+                final place = await context.pushNamed<Place>(
+                  Routes.search.name,
+                  extra: {'isStart': true},
+                );
+                vm.updateStartController(place);
+              },
+              onEndTap: (context, vm) async {
+                final place = await context.pushNamed<Place>(
+                  Routes.search.name,
+                  extra: {'isStart': false},
+                );
+                vm.updateDestController(place);
               },
             );
           },

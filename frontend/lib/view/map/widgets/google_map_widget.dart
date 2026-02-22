@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -22,9 +23,9 @@ class GoogleMapWidget extends StatefulWidget {
 }
 
 class GoogleMapWidgetState extends State<GoogleMapWidget> {
-  late BitmapDescriptor startMarkerIcon;
-  late BitmapDescriptor endMarkerIcon;
-  late BitmapDescriptor transferMarker;
+  BitmapDescriptor? startMarkerIcon;
+  BitmapDescriptor? endMarkerIcon;
+  BitmapDescriptor? transferMarker;
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -59,7 +60,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
         _controller.complete(controller);
 
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await Future.delayed(Duration(milliseconds: 1500));
+          await Future.delayed(Duration(milliseconds: 1000));
 
           double padding = 0;
           if (context.mounted) {
@@ -70,7 +71,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             final bounds = _getBounds(widget.itinerary);
             await controller.animateCamera(
               CameraUpdate.newLatLngBounds(bounds, padding),
-              duration: Duration(milliseconds: 400),
+              duration: Duration(milliseconds: 700),
             );
           }
         });
@@ -81,15 +82,15 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   Future<void> _loadMarkerIcon() async {
     startMarkerIcon = await BitmapDescriptor.asset(
       const ImageConfiguration(size: Size(28, 28)),
-      'assets/images/start_marker.png',
+      AppImages.startMarker,
     );
     endMarkerIcon = await BitmapDescriptor.asset(
       const ImageConfiguration(size: Size(28, 28)),
-      'assets/images/end_marker.png',
+      AppImages.endMarker,
     );
     transferMarker = await BitmapDescriptor.asset(
       const ImageConfiguration(size: Size(28, 28)),
-      'assets/images/transfer_marker.png',
+      AppImages.transferMarker,
     );
     setState(() {});
   }
@@ -120,7 +121,12 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   // Create markers for start, end, and in-between
   Set<Marker> _getMarkers(List<Itinerary> itinerary, bool getIntermediate) {
-    if (itinerary.isEmpty) return <Marker>{};
+    if (itinerary.isEmpty ||
+        startMarkerIcon == null ||
+        endMarkerIcon == null ||
+        transferMarker == null) {
+      return <Marker>{};
+    }
 
     final markers = <Marker>{};
 
@@ -136,7 +142,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('marker_${i}_${point.from}'),
             position: position,
             infoWindow: InfoWindow(title: point.from),
-            icon: startMarkerIcon,
+            icon: startMarkerIcon!,
           ),
         );
 
@@ -147,7 +153,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
               markerId: MarkerId('marker_${i}_${point.to}'),
               position: LatLng(point.endLat, point.endLon),
               infoWindow: InfoWindow(title: point.to),
-              icon: endMarkerIcon,
+              icon: endMarkerIcon!,
             ),
           );
         }
@@ -162,7 +168,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('marker_${i}_${point.to}'),
             position: LatLng(point.startLat, point.startLon),
             infoWindow: InfoWindow(title: point.to),
-            icon: transferMarker,
+            icon: transferMarker!,
           ),
         );
       }
@@ -175,7 +181,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('marker_${i}_${point.to}'),
             position: LatLng(point.endLat, point.endLon),
             infoWindow: InfoWindow(title: point.to),
-            icon: endMarkerIcon,
+            icon: endMarkerIcon!,
           ),
         );
         continue;
@@ -188,7 +194,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('marker_${i}_${point.from}'),
             position: position,
             infoWindow: InfoWindow(title: point.from),
-            icon: transferMarker,
+            icon: transferMarker!,
           ),
         );
       }

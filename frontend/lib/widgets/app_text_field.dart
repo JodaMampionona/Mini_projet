@@ -3,6 +3,7 @@ import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/app_text_styles.dart';
 
 class AppTextField extends StatelessWidget {
+  final String? Function(String?)? validator;
   final String hintText;
   final TextEditingController controller;
   final IconData? icon;
@@ -16,11 +17,13 @@ class AppTextField extends StatelessWidget {
     this.focusNode,
     this.icon,
     this.onTap,
+    required this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      validator: validator,
       controller: controller,
       readOnly: onTap != null,
       onTap: onTap,
@@ -48,10 +51,8 @@ class AppTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(color: Colors.transparent),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: Colors.transparent),
-        ),
+
+        errorStyle: TextStyle(height: 0, fontSize: 0),
       ),
     );
   }
