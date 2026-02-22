@@ -123,16 +123,24 @@ final appRouter = GoRouter(
             ChangeNotifierProvider(create: (_) => ItineraryViewModel()),
             ChangeNotifierProvider(create: (_) => BusViewModel()),
           ],
-          child: Scaffold(
-            bottomNavigationBar: BottomNavBar(
-              onTap: (index) {
-                if (index == currentIndex) return;
-                final newRoute = BottomNavUtil.indexToRouteName(index);
-                context.goNamed(newRoute);
-              },
-              currentIndex: currentIndex,
+          child: PopScope(
+            canPop: state.matchedLocation.startsWith(Routes.home.name),
+            onPopInvokedWithResult: (didPop, result) {
+              if (!state.matchedLocation.startsWith(Routes.home.name)) {
+                context.goNamed(Routes.home.name);
+              }
+            },
+            child: Scaffold(
+              bottomNavigationBar: BottomNavBar(
+                onTap: (index) {
+                  if (index == currentIndex) return;
+                  final newRoute = BottomNavUtil.indexToRouteName(index);
+                  context.goNamed(newRoute);
+                },
+                currentIndex: currentIndex,
+              ),
+              body: child,
             ),
-            body: child,
           ),
         );
       },

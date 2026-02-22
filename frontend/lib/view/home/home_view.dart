@@ -54,7 +54,7 @@ class _HomeViewState extends State<HomeView> {
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 Text(
-                  'Trouvez votre itinéraire',
+                  'Trouvez votre itinéraire.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
