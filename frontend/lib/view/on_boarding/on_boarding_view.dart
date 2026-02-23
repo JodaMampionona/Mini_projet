@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/view/on_boarding/widgets/on_boarding_slider_page.dart';
 import 'package:frontend/view/on_boarding/widgets/page_slider.dart';
-import 'package:frontend/viewmodel/on_boarding_viewmodel.dart';
 
 class OnBoardingView extends StatelessWidget {
   final Function(BuildContext) onConfirmPress;

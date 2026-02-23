@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/place_model.dart';
-import 'package:frontend/model/session_model.dart';
 import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/provider/session_state_provider.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';
-import 'package:frontend/services/app_preferences_service.dart';
 import 'package:frontend/view/bus/bus_view.dart';
 import 'package:frontend/view/bus_stops_map/bus_stops_map.dart';
 import 'package:frontend/view/home/home_view.dart';
@@ -24,9 +23,8 @@ import 'package:provider/provider.dart';
 
 final appRouter = GoRouter(
   initialLocation: Routes.onBoarding.path,
-  redirect: (context, state) {
-    return null;
-    final isFirstTime = SessionModel.isFirstTime;
+  redirect: (context, state) async {
+    final isFirstTime = await context.read<SessionStateProvider>().isFirstTime;
 
     final isOnboarding = state.matchedLocation == Routes.onBoarding.path;
 

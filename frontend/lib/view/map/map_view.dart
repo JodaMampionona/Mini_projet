@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/app_text_styles.dart';
 import '../../viewmodel/map_viewmodel.dart';
 
 class MapView extends StatefulWidget {
@@ -104,75 +102,6 @@ class _MapViewState extends State<MapView> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _bottomCard(MapViewModel vm) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Material(
-            color: Colors.transparent,
-            child: Ink(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.componentBg,
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: () {
-                  widget.onSeeItineraryTap(context, vm);
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: 28,
-                    top: 16,
-                    bottom: 20,
-                    right: 28,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
-                        children: [
-                          Text(
-                            'Voir itinéraire',
-                            style: AppTextStyles.title.copyWith(
-                              color: AppColors.secondaryMain,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 200,
-                            child: Text(
-                              'Consultez la liste des bus à prendre.',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.grey50,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      CircleAvatar(
-                        backgroundColor: AppColors.primaryMain,
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: AppColors.secondaryShade100,
-                          opticalSize: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 8),
-        ],
       ),
     );
   }

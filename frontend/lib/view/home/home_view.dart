@@ -19,12 +19,12 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     final vm = context.read<HomeViewModel>();
-    vm.init();
+    vm.init(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.read<HomeViewModel>();
+    final vm = context.watch<HomeViewModel>();
     return SafeArea(
       child: Column(
         children: [

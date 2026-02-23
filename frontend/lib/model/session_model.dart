@@ -1,10 +1,8 @@
-import 'package:frontend/services/app_preferences_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionModel {
-  static bool get isFirstTime =>
-      AppPreferencesService.instance.getBool('isFirstTime') ?? true;
-
-  static Future<void> setNotFirstTime() async {
-    await AppPreferencesService.instance.setBool('isFirstTime', false);
+  Future<void> setNotFirstTime() async {
+    final instance = await SharedPreferences.getInstance();
+    await instance.setBool('isFirstTime', false);
   }
 }
