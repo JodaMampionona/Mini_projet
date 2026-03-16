@@ -40,6 +40,11 @@ class _MapViewState extends State<MapView> {
     if (widget.end != null) {
       vm.updateDestController(widget.end);
     }
+
+    if (widget.start != null && widget.end != null) {
+      vm.getItinerary();
+    }
+
     super.initState();
   }
 
@@ -83,17 +88,22 @@ class _MapViewState extends State<MapView> {
                       : Positioned(
                           bottom: 16,
                           right: 16,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              widget.onSeeItineraryTap(context, vm);
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("Voir itinéraire"),
-                                SizedBox(width: 8),
-                                Icon(Icons.route),
-                              ],
+                          child: ElevatedButton.icon(
+                            onPressed: () =>
+                                widget.onSeeItineraryTap(context, vm),
+                            icon: const Icon(Icons.route),
+                            label: const Text('Voir itinéraire'),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.only(
+                                left: 14,
+                                right: 16,
+                                top: 12,
+                                bottom: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              elevation: 4,
                             ),
                           ),
                         ),

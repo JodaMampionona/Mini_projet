@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/app_text_styles.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -62,7 +61,10 @@ class _ItineraryViewState extends State<ItineraryView> {
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Aucun itinéraire.", style: AppTextStyles.bodyMedium),
+                  Text(
+                    "Aucun itinéraire.",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   ElevatedButton(
                     onPressed: () => widget.onNewItineraryTap(context),
                     child: Text('Nouvel itinéraire'),

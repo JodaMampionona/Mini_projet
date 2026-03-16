@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/model/history_model.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
 
 class MapViewModel extends ChangeNotifier {
-  ItineraryModel model = ItineraryModel();
+  final itineraryModel = ItineraryModel();
+  final historyModel = HistoryModel();
   List<Itinerary> itinerary = [];
 
   bool loading = false;
@@ -53,8 +55,15 @@ class MapViewModel extends ChangeNotifier {
 
   void getItinerary() {
     if (start == null || end == null) return;
+
     setLoading(true);
-    model
+
+    final historyEntry = HistoryEntry(
+      searchedAt: DateTime.now(),
+      start: start!,
+      end: end!,
+    );
+    itineraryModel
         .getItinerary(start!, end!)
         .then((result) {
           if (result != null) {
@@ -63,6 +72,7 @@ class MapViewModel extends ChangeNotifier {
         })
         .whenComplete(() {
           setLoading(false);
+          historyModel.add(historyEntry);
         });
   }
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-
 import '../constants/app_colors.dart';
-import '../constants/app_text_styles.dart';
 
 class ErrorMessage extends StatelessWidget {
   final String message;
+
   const ErrorMessage({super.key, required this.message});
 
   @override
@@ -16,7 +15,9 @@ class ErrorMessage extends StatelessWidget {
       color: AppColors.errorBg.withAlpha(60),
       child: Text(
         message,
-        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.errorText),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: AppColors.errorText),
       ),
     );
   }

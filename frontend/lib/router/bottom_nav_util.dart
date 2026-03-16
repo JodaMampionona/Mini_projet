@@ -6,7 +6,7 @@ class BottomNavUtil {
   static int locationToIndex(String location) {
     return location.startsWith(Routes.map.path)
         ? BottomTab.map.index
-        : location.startsWith(Routes.bus.path)
+        : location.startsWith(Routes.busList.path)
         ? BottomTab.bus.index
         : BottomTab.home.index;
   }
@@ -15,7 +15,7 @@ class BottomNavUtil {
     return BottomTab.values[index] == BottomTab.map
         ? Routes.map.name
         : BottomTab.values[index] == BottomTab.bus
-        ? Routes.bus.name
+        ? Routes.busList.name
         : Routes.home.name;
   }
 }

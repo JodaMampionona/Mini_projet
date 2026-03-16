@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/model/history_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
 
 class ItineraryViewModel extends ChangeNotifier {
-  final model = ItineraryModel();
+  final itineraryModel = ItineraryModel();
+  final historyModel = HistoryModel();
+
   List<Itinerary> itinerary = [];
   bool loading = false;
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/app_text_styles.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/widgets/app_text_field.dart';
@@ -96,9 +95,8 @@ class _SearchViewState extends State<SearchView> {
                           ),
                           Text(
                             'Utiliser ma position actuelle',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.primaryShade50,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: AppColors.primaryShade50),
                           ),
                         ],
                       ),
@@ -112,7 +110,9 @@ class _SearchViewState extends State<SearchView> {
             padding: const EdgeInsets.only(left: 16, bottom: 16),
             child: Text(
               'Arrêts proches',
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey40),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.grey40),
             ),
           ),
 
@@ -145,17 +145,15 @@ class _SearchViewState extends State<SearchView> {
                           tileColor: AppColors.componentBg,
                           title: Text(
                             vm.searchResponse!.stops[i].name,
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.secondaryShade100,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: AppColors.secondaryShade100),
                           ),
                           subtitle:
                               vm.searchResponse!.stops[i].bus?.name != null
                               ? Text(
                                   vm.searchResponse!.stops[i].bus!.name,
-                                  style: AppTextStyles.label.copyWith(
-                                    color: AppColors.grey70,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(color: AppColors.grey70),
                                 )
                               : null,
                           leading: Icon(

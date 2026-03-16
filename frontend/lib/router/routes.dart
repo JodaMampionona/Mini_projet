@@ -10,6 +10,7 @@ class Routes {
   static final search = Route(path: '/search', name: '/search');
   static final map = Route(path: '/map', name: '/map');
   static final itinerary = Route(path: '/itinerary', name: '/itinerary');
-  static final bus = Route(path: '/bus', name: '/bus');
-  static final busStopMap = Route(path: '/bus-stops', name: '/bus-stops');
+  static final busList = Route(path: '/bus-list', name: '/bus-list');
+  static final busDetails = Route(path: '/bus-details', name: '/bus-details');
+  static final history = Route(path: '/history', name: '/history');
 }

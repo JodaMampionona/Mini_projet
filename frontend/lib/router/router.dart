@@ -5,14 +5,15 @@ import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/provider/session_state_provider.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';
-import 'package:frontend/view/bus/bus_view.dart';
-import 'package:frontend/view/bus_stops_map/bus_stops_map.dart';
+import 'package:frontend/view/bus_list/bus_list_view.dart';
+import 'package:frontend/view/history/history_view.dart';
 import 'package:frontend/view/home/home_view.dart';
 import 'package:frontend/view/itinerary/itinerary_view.dart';
 import 'package:frontend/view/map/map_view.dart';
 import 'package:frontend/view/on_boarding/on_boarding_view.dart';
 import 'package:frontend/view/search/search_view.dart';
 import 'package:frontend/viewmodel/bus_viewmodel.dart';
+import 'package:frontend/viewmodel/history_viewmodel.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:frontend/viewmodel/map_viewmodel.dart';
@@ -21,16 +22,14 @@ import 'package:frontend/widgets/nav_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../view/bus_details/bus_details_view.dart';
+
 final appRouter = GoRouter(
   initialLocation: Routes.onBoarding.path,
   redirect: (context, state) async {
     final isFirstTime = await context.read<SessionStateProvider>().isFirstTime;
 
     final isOnboarding = state.matchedLocation == Routes.onBoarding.path;
-
-    if (isFirstTime && !isOnboarding) {
-      return Routes.onBoarding.path;
-    }
 
     if (!isFirstTime && isOnboarding) {
       return Routes.home.path;
@@ -43,9 +42,7 @@ final appRouter = GoRouter(
     GoRoute(
       name: Routes.onBoarding.name,
       path: Routes.onBoarding.path,
-      builder: (context, state) => OnBoardingView(
-        onConfirmPress: (context) => context.goNamed(Routes.home.name),
-      ),
+      builder: (context, state) => OnBoardingView(),
     ),
 
     // search
@@ -65,11 +62,31 @@ final appRouter = GoRouter(
                 : 'Où voulez-vous aller ?',
             onPlaceTap: (place) {
               final extra = {isStart ? 'start' : 'end': place};
-              if ((from as String).startsWith(Routes.home.name)) {
+              if ((from as String).startsWith(Routes.home.name) ||
+                  from.startsWith(Routes.history.name)) {
                 context.goNamed(Routes.map.name, extra: extra);
               } else {
                 context.pop(place);
               }
+            },
+          ),
+        );
+      },
+    ),
+
+    // history
+    GoRoute(
+      name: Routes.history.name,
+      path: Routes.history.path,
+      builder: (context, state) {
+        return ChangeNotifierProvider(
+          create: (_) => HistoryViewModel(),
+          child: HistoryView(
+            onHistoryItemTap: (Place start, Place end) {
+              context.goNamed(
+                Routes.map.name,
+                extra: {'start': start, 'end': end},
+              );
             },
           ),
         );
@@ -97,14 +114,14 @@ final appRouter = GoRouter(
 
     // bus stops and map
     GoRoute(
-      name: Routes.busStopMap.name,
-      path: Routes.busStopMap.path,
+      name: Routes.busDetails.name,
+      path: Routes.busDetails.path,
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>?;
         final stops = extraData?['stops'] ?? [];
         final busName = extraData?['busName'] ?? '';
 
-        return BusStopsMap(stops: stops, busName: busName);
+        return BusDetailsView(stops: stops, busName: busName);
       },
     ),
 
@@ -118,8 +135,7 @@ final appRouter = GoRouter(
           providers: [
             ChangeNotifierProvider(create: (_) => HomeViewModel()),
             ChangeNotifierProvider(create: (_) => MapViewModel()),
-            ChangeNotifierProvider(create: (_) => ItineraryViewModel()),
-            ChangeNotifierProvider(create: (_) => BusViewModel()),
+            ChangeNotifierProvider(create: (_) => BusListViewModel()),
           ],
           child: PopScope(
             canPop: state.matchedLocation.startsWith(Routes.home.name),
@@ -149,10 +165,22 @@ final appRouter = GoRouter(
           name: Routes.home.name,
           path: Routes.home.path,
           builder: (context, state) => HomeView(
-            onSearchItineraryPress: (context) {
+            onHistoryPress: (vm) {
+              context.pushNamed(Routes.history.name).then((_) {
+                if (!context.mounted) return;
+                vm.loadHistory();
+              });
+            },
+            onSearchItineraryPress: () {
               context.pushNamed(
                 Routes.search.name,
                 extra: {'isStart': false, 'from': Routes.home.name},
+              );
+            },
+            onHistoryItemTap: (Place start, Place end) {
+              context.goNamed(
+                Routes.map.name,
+                extra: {'start': start, 'end': end},
               );
             },
           ),
@@ -194,13 +222,14 @@ final appRouter = GoRouter(
         ),
         // bus
         GoRoute(
-          name: Routes.bus.name,
-          path: Routes.bus.path,
+          name: Routes.busList.name,
+          path: Routes.busList.path,
           builder: (context, state) {
-            return BusView(
-              onItemTap: (List<Stop> busStops, String busName) {
+            return BusListView(
+              onItemTap: (List<Stop> busStops, String? busName) {
+                if (busName == null) return;
                 context.pushNamed(
-                  Routes.busStopMap.name,
+                  Routes.busDetails.name,
                   extra: {'busName': busName, 'stops': busStops},
                 );
               },

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/stop_model.dart';
 
-class BusViewModel extends ChangeNotifier {
+class BusListViewModel extends ChangeNotifier {
   final model = BusModel();
 
   final searchController = TextEditingController();
@@ -22,9 +22,9 @@ class BusViewModel extends ChangeNotifier {
   bool get busLoading => _busLoading;
 
   List<Stop> busStops = [];
-  String selectedBusName = '';
+  String? selectedBusName;
 
-  BusViewModel() {
+  BusListViewModel() {
     searchController.addListener(_onSearchChanged);
   }
 
@@ -44,11 +44,11 @@ class BusViewModel extends ChangeNotifier {
         .getAll()
         .then((res) {
           _buses = res;
-          _filteredBuses = List.from(res); // copie initiale
+          _filteredBuses = List.from(res);
           errorMsg = null;
         })
         .catchError((e) {
-          errorMsg = 'Impossible de récupérer la liste des bus';
+          errorMsg = 'Impossible de récupérer la liste des bus.';
         })
         .whenComplete(() {
           setLoading(false);
@@ -63,7 +63,8 @@ class BusViewModel extends ChangeNotifier {
       selectedBusName = result.name;
       errorMsg = null;
     } catch (e) {
-      errorMsg = 'Vérifiez votre connexion internet';
+      selectedBusName = null;
+      errorMsg = 'Impossible de récupérer les informations';
     } finally {
       setBusLoading(false);
     }

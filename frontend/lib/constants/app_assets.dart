@@ -4,6 +4,8 @@ class AppIllustrations {
   static const itinerary = '$_prefix/itinerary.svg';
   static const economy = '$_prefix/economy.svg';
   static const busStop = '$_prefix/bus_stop.svg';
+  static const searchEverywhere = '$_prefix/searching_everywhere.svg';
+  static const noData = '$_prefix/no_data.svg';
 }
 
 class AppImages {

@@ -14,31 +14,21 @@ class OnBoardingSliderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 36),
-          SizedBox(
-            height: 110,
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
+          Expanded(child: SvgPicture.asset(svgAssetName, fit: BoxFit.contain)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          SizedBox(
-            height: 110,
-            child: Text(
-              description,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-          SizedBox(height: 10),
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: SvgPicture.asset(svgAssetName, fit: BoxFit.contain),
-            ),
+          SizedBox(height: 8),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),

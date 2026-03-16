@@ -53,18 +53,18 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
       zoomControlsEnabled: false,
       initialCameraPosition: const CameraPosition(
         target: LatLng(-18.907437, 47.526135),
-        zoom: 12,
+        zoom: 13,
       ),
       style: _mapStyle,
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
 
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await Future.delayed(Duration(milliseconds: 1000));
+          await Future.delayed(Duration(milliseconds: 300));
 
           double padding = 0;
           if (context.mounted) {
-            padding = MediaQuery.of(context).size.height * 0.13;
+            padding = MediaQuery.of(context).size.height * 0.1;
           }
 
           if (widget.itinerary.isNotEmpty) {
@@ -121,51 +121,37 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   // Create markers for start, end, and in-between
   Set<Marker> _getMarkers(List<Itinerary> itinerary, bool getIntermediate) {
+    final markers = <Marker>{};
+
     if (itinerary.isEmpty ||
         startMarkerIcon == null ||
         endMarkerIcon == null ||
         transferMarker == null) {
-      return <Marker>{};
+      return markers;
     }
-
-    final markers = <Marker>{};
 
     for (int i = 0; i < itinerary.length; i++) {
       final point = itinerary[i];
-      var position = LatLng(point.startLat, point.startLon);
 
       // start
       if (i == 0) {
         markers.add(
           Marker(
             anchor: Offset(0.5, 0.5),
-            markerId: MarkerId('marker_${i}_${point.from}'),
-            position: position,
+            markerId: MarkerId('start_$i'),
+            position: LatLng(point.startLat, point.startLon),
             infoWindow: InfoWindow(title: point.from),
             icon: startMarkerIcon!,
           ),
         );
-
-        if (itinerary.length == 1) {
-          markers.add(
-            Marker(
-              anchor: Offset(0.5, 0.5),
-              markerId: MarkerId('marker_${i}_${point.to}'),
-              position: LatLng(point.endLat, point.endLon),
-              infoWindow: InfoWindow(title: point.to),
-              icon: endMarkerIcon!,
-            ),
-          );
-        }
-
-        continue;
       }
 
-      if (i == itinerary.length - 1 && getIntermediate) {
+      // intermediate
+      if (getIntermediate && i != 0) {
         markers.add(
           Marker(
             anchor: Offset(0.5, 0.5),
-            markerId: MarkerId('marker_${i}_${point.to}'),
+            markerId: MarkerId('transfer_$i'),
             position: LatLng(point.startLat, point.startLon),
             infoWindow: InfoWindow(title: point.to),
             icon: transferMarker!,
@@ -178,23 +164,10 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
         markers.add(
           Marker(
             anchor: Offset(0.5, 0.5),
-            markerId: MarkerId('marker_${i}_${point.to}'),
+            markerId: MarkerId('end_$i'),
             position: LatLng(point.endLat, point.endLon),
             infoWindow: InfoWindow(title: point.to),
             icon: endMarkerIcon!,
-          ),
-        );
-        continue;
-      }
-
-      if (getIntermediate) {
-        markers.add(
-          Marker(
-            anchor: Offset(0.5, 0.5),
-            markerId: MarkerId('marker_${i}_${point.from}'),
-            position: position,
-            infoWindow: InfoWindow(title: point.from),
-            icon: transferMarker!,
           ),
         );
       }

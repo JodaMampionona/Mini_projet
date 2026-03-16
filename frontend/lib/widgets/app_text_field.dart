@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/app_text_styles.dart';
 
 class AppTextField extends StatelessWidget {
   final String? Function(String?)? validator;
@@ -23,6 +22,9 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(color: AppColors.secondaryShade100),
       validator: validator,
       controller: controller,
       readOnly: onTap != null,
@@ -31,8 +33,10 @@ class AppTextField extends StatelessWidget {
       decoration: InputDecoration(
         constraints: BoxConstraints(maxHeight: 40, minHeight: 40),
         hintText: hintText,
-        prefixIcon: icon != null ? Icon(icon, color: AppColors.grey50) : null,
-        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey40),
+        prefixIcon: icon != null ? Icon(icon, color: AppColors.grey70) : null,
+        hintStyle: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: AppColors.grey50),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         fillColor: AppColors.componentBg,
         border: OutlineInputBorder(
@@ -51,8 +55,6 @@ class AppTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(color: Colors.transparent),
         ),
-
-        errorStyle: TextStyle(height: 0, fontSize: 0),
       ),
     );
   }

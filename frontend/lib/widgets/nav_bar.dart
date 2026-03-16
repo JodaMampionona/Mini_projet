@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/app_text_styles.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class NavDestination extends StatelessWidget {
@@ -46,7 +45,9 @@ class BottomNavBar extends StatelessWidget {
       selectedIndex: currentIndex,
       onDestinationSelected: onTap,
       labelTextStyle: WidgetStatePropertyAll(
-        AppTextStyles.label.copyWith(color: AppColors.secondaryMain),
+        Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(color: AppColors.secondaryMain),
       ),
       destinations: const [
         NavDestination(label: 'Accueil', icon: Symbols.home),

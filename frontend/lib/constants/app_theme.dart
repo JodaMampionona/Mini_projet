@@ -15,10 +15,26 @@ class AppTheme {
     // button
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+        textStyle: Theme.of(_context).textTheme.labelLarge,
         elevation: 0,
         backgroundColor: AppColors.secondaryMain,
         foregroundColor: AppColors.primaryTint100,
         shadowColor: Colors.transparent,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        textStyle: Theme.of(_context).textTheme.labelLarge,
+        foregroundColor: AppColors.secondaryMain,
+        side: BorderSide(color: AppColors.secondaryMain),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.secondaryMain,
+        textStyle: Theme.of(
+          _context,
+        ).textTheme.labelLarge?.copyWith(color: AppColors.grey90),
       ),
     ),
 
@@ -74,85 +90,85 @@ class AppTheme {
 
     textTheme: TextTheme(
       // display
-      displayLarge: GoogleFonts.manrope(
+      displayLarge: GoogleFonts.dmSans(
         fontSize: 96,
         fontWeight: FontWeight.bold,
         color: AppColors.secondaryShade100,
       ),
-      displayMedium: GoogleFonts.manrope(
+      displayMedium: GoogleFonts.dmSans(
         fontSize: 60,
         fontWeight: FontWeight.bold,
         color: AppColors.secondaryShade100,
       ),
-      displaySmall: GoogleFonts.manrope(
+      displaySmall: GoogleFonts.dmSans(
         fontSize: 48,
         fontWeight: FontWeight.bold,
         color: AppColors.secondaryShade100,
       ),
 
       // headline
-      headlineLarge: GoogleFonts.manrope(
+      headlineLarge: GoogleFonts.dmSans(
         fontSize: 40,
         fontWeight: FontWeight.bold,
         color: AppColors.secondaryShade100,
       ),
-      headlineMedium: GoogleFonts.manrope(
+      headlineMedium: GoogleFonts.dmSans(
         fontSize: 34,
         fontWeight: FontWeight.w600,
         color: AppColors.secondaryShade100,
       ),
-      headlineSmall: GoogleFonts.manrope(
+      headlineSmall: GoogleFonts.dmSans(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: AppColors.secondaryShade100,
       ),
 
       // title
-      titleLarge: GoogleFonts.manrope(
+      titleLarge: GoogleFonts.dmSans(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: AppColors.secondaryShade100,
       ),
-      titleMedium: GoogleFonts.manrope(
+      titleMedium: GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: AppColors.secondaryShade100,
       ),
-      titleSmall: GoogleFonts.manrope(
+      titleSmall: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: AppColors.secondaryShade100,
       ),
 
       // body
-      bodyLarge: GoogleFonts.workSans(
+      bodyLarge: GoogleFonts.dmSans(
         fontSize: 18,
         fontWeight: FontWeight.normal,
         color: AppColors.secondaryShade100,
       ),
-      bodyMedium: GoogleFonts.workSans(
+      bodyMedium: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.normal,
         color: AppColors.grey40,
       ),
-      bodySmall: GoogleFonts.workSans(
+      bodySmall: GoogleFonts.dmSans(
         fontSize: 12,
         fontWeight: FontWeight.normal,
         color: AppColors.grey40,
       ),
 
       // label
-      labelLarge: GoogleFonts.workSans(
+      labelLarge: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: AppColors.secondaryShade100,
       ),
-      labelMedium: GoogleFonts.workSans(
+      labelMedium: GoogleFonts.dmSans(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: AppColors.secondaryShade100,
       ),
-      labelSmall: GoogleFonts.workSans(
+      labelSmall: GoogleFonts.dmSans(
         fontSize: 10,
         fontWeight: FontWeight.w500,
         color: AppColors.secondaryShade100,

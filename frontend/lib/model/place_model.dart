@@ -12,6 +12,24 @@ class Place {
     required this.lat,
     required this.lon,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'city': city,
+      'lat': lat,
+      'lon': lon,
+    };
+  }
+
+  factory Place.fromJson(Map<String, dynamic> json) {
+    return Place(
+      name: json['name'] as String,
+      city: json['city'] as String,
+      lat: (json['lat'] as num).toDouble(),
+      lon: (json['lon'] as num).toDouble(),
+    );
+  }
 }
 
 class PlaceModel {
@@ -36,7 +54,7 @@ class PlaceModel {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
+      // Permissions are denied forever
       return Future.error(
         'Veuillez autoriser la localisation dans les paramètres',
       );

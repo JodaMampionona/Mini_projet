@@ -38,7 +38,6 @@ class SearchViewModel extends ChangeNotifier {
       }
       errorMsg = null;
     } catch (e) {
-      errorMsg = "Vérifiez votre connexion internet.";
       searchResponse = null;
     } finally {
       loading = false;
