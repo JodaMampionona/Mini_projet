@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
+import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app_colors.dart';
@@ -88,23 +89,10 @@ class _MapViewState extends State<MapView> {
                       : Positioned(
                           bottom: 16,
                           right: 16,
-                          child: ElevatedButton.icon(
-                            onPressed: () =>
-                                widget.onSeeItineraryTap(context, vm),
-                            icon: const Icon(Icons.route),
-                            label: const Text('Voir itinéraire'),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.only(
-                                left: 14,
-                                right: 16,
-                                top: 12,
-                                bottom: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              elevation: 4,
-                            ),
+                          child: CustomIconButton(
+                            onTap: () => widget.onSeeItineraryTap(context, vm),
+                            label: "Voir itinéraire",
+                            icon: Icons.route,
                           ),
                         ),
                 ],

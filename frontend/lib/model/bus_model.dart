@@ -25,12 +25,12 @@ class Bus {
 
 class BusModel {
   Future<Bus> getBus(int id) async {
-    final response = await dio.get('/itinerary/bus?bus_id=$id');
+    final response = await dio.get('/bus?bus_id=$id');
     return Bus.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<List<Bus>> getAll() async {
-    final response = await dio.get('/itinerary/bus/');
+    final response = await dio.get('/bus');
     return (response.data as List<dynamic>)
         .map((e) => Bus.fromJson(e as Map<String, dynamic>))
         .toList();

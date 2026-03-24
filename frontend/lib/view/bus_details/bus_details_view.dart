@@ -3,6 +3,7 @@ import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
+import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:go_router/go_router.dart';
 
 class BusDetailsView extends StatefulWidget {
@@ -152,7 +153,6 @@ class _BusDetailsViewState extends State<BusDetailsView> {
                                   Text('Ligne ${widget.busName}'),
                                 ],
                               ),
-                              // ↓ Bouton branché sur _dismissSheet
                               IconButton(
                                 onPressed: _dismissSheet,
                                 icon: const Icon(Icons.keyboard_arrow_down),
@@ -251,22 +251,10 @@ class _BusDetailsViewState extends State<BusDetailsView> {
             left: 0,
             right: 0,
             child: Center(
-              child: ElevatedButton.icon(
-                onPressed: _showSheet,
-                icon: const Icon(Icons.keyboard_arrow_up),
-                label: const Text('Voir les arrêts'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.only(
-                    left: 14,
-                    right: 16,
-                    top: 12,
-                    bottom: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  elevation: 4,
-                ),
+              child: CustomIconButton(
+                onTap: _showSheet,
+                label: 'Voir les arrêts',
+                icon: Icons.keyboard_arrow_up,
               ),
             ),
           ),

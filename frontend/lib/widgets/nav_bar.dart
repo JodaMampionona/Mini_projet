@@ -52,7 +52,7 @@ class BottomNavBar extends StatelessWidget {
       destinations: const [
         NavDestination(label: 'Accueil', icon: Symbols.home),
         NavDestination(label: 'Carte', icon: Symbols.map),
-        NavDestination(label: 'Bus', icon: Symbols.directions_bus),
+        NavDestination(label: 'Lignes', icon: Symbols.directions_bus),
       ],
     );
   }

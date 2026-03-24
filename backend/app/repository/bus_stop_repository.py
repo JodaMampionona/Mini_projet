@@ -1,11 +1,18 @@
 from app.dao.bus_stop_dao import BusStopDAO
 from app.model.bus_stop_model import BusStop
 
+
 class BusStopRepository:
     def __init__(self):
         self.dao = BusStopDAO()
 
     def get_all(self): return self.dao.get_all()
+
+    def get_all_paginated(self, page: int, page_size: int):
+        return self.dao.get_all_paginated(page, page_size)
+
+    def get_total_count(self):
+        return self.dao.get_total_count()
 
     def get_by_id(self, stop_id: int): return self.dao.get_by_id(stop_id)
 
@@ -17,6 +24,7 @@ class BusStopRepository:
 
     def delete(self, stop_id: int): return self.dao.delete(stop_id)
 
-    def get_first_stop(self, bus_id: int): return self.dao.get_first_stop(bus_id)
+    def get_first_stop(
+        self, bus_id: int): return self.dao.get_first_stop(bus_id)
 
     def get_last_stop(self, bus_id: int): return self.dao.get_last_stop(bus_id)

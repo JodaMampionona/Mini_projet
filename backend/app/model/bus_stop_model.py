@@ -6,3 +6,4 @@ class BusStop:
     lat: float
     lon: float
     id: int = None
+    zone: str = None

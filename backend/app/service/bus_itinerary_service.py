@@ -160,38 +160,6 @@ class BusItineraryService:
     # ---------------------------------------------------------
     # GESTION DES BUS ET RECHERCHE
     # ---------------------------------------------------------
-    def get_buses_simple_list(self):
-        buses = self.busRepo.get_all()
-
-        return [{"id": b.id, "name": b.name, "itinerary": [
-            self.stopRepo.get_first_stop(b.id),
-            self.stopRepo.get_last_stop(b.id)
-        ]} for b in buses]
-
-    def get_bus_details_with_stops(self, bus_id: int):
-        """Retourne les détails d'un bus et son itinéraire complet (tous les arrêts)."""
-        bus = self.busRepo.get_by_id(bus_id)
-        if not bus:
-            return None
-
-        all_links = self.linkRepo.get_links_ordered_by_rank()
-        bus_links = [link for link in all_links if link.bus.id == bus_id]
-
-        stops_itinerary = []
-        for link in bus_links:
-            stops_itinerary.append({
-                "id": link.stop.id,
-                "name": link.stop.name,
-                "lat": link.stop.lat,
-                "lon": link.stop.lon,
-                "order": link.rank
-            })
-
-        return {
-            "id": bus.id,
-            "name": bus.name,
-            "itinerary": stops_itinerary
-        }
 
     def search_nearby_stops_by_lat_lon(self, lat: float, lon: float, radius_km: float = 0.5):
         """Recherche les arrêts proches d'une position GPS donnée."""

@@ -75,15 +75,29 @@ class _HistoryViewState extends State<HistoryView> {
                   ),
                   SizedBox(height: 16),
                   Text('Aucun trajet pour le moment.'),
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     onPressed: () {
                       context.pushNamed(
                         Routes.search.name,
                         extra: {'isStart': false, 'from': Routes.history.name},
                       );
                     },
-                    child: Text('Nouvel itinéraire'),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Nouvel itinéraire'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                        left: 14,
+                        right: 16,
+                        top: 12,
+                        bottom: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      elevation: 4,
+                    ),
                   ),
+
                 ],
               ),
             )

@@ -1,43 +1,32 @@
 import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/search_response.dart';
 import 'package:frontend/utils/dio_util.dart';
 
-class SearchResponse {
-  final String placeName;
-  final double lat;
-  final double lon;
-  final List<Stop> stops;
+class StopResponse {
+  final int page;
+  final int pageSize;
+  final int total;
+  final int totalPages;
+  final List<Stop> data;
 
-  const SearchResponse({
-    required this.placeName,
-    required this.lat,
-    required this.lon,
-    required this.stops,
-  });
+  StopResponse(
+    this.page,
+    this.pageSize,
+    this.total,
+    this.totalPages,
+    this.data,
+  );
 
-  factory SearchResponse.fromJson(Map<String, dynamic> json) {
-    return SearchResponse(
-      placeName: json['search_place'] as String,
-      lat: (json['coordinates']['lat'] as num).toDouble(),
-      lon: (json['coordinates']['lon'] as num).toDouble(),
-      stops: (json['stops'] as List<dynamic>)
+  factory StopResponse.fromJson(Map<String, dynamic> json) {
+    return StopResponse(
+      json['pagination']['page'] as int,
+      json['pagination']['page_size'] as int,
+      json['pagination']['total'] as int,
+      json['pagination']['total_pages'] as int,
+      (json['data'] as List<dynamic>)
           .map((e) => Stop.fromJson(e as Map<String, dynamic>))
           .toList(),
-    );
-  }
-
-  SearchResponse copyWith({
-    int? distance,
-    String? placeName,
-    double? lat,
-    double? lon,
-    List<Stop>? stops,
-  }) {
-    return SearchResponse(
-      placeName: placeName ?? this.placeName,
-      lat: lat ?? this.lat,
-      lon: lon ?? this.lon,
-      stops: stops ?? List<Stop>.from(this.stops),
     );
   }
 }
@@ -85,5 +74,30 @@ class StopModel {
       '/itinerary/search?lat=${place.lat}&lon=${place.lon}',
     );
     return SearchResponse.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<StopResponse?> getAll({int? page}) async {
+    final pageQuery = page != null ? '?page=$page' : '';
+    final response = await dio.get('/bus_stops/$pageQuery');
+
+    if (response.statusCode == 200) {
+      final jsonData = response.data as Map<String, dynamic>;
+
+      final stopsList = (jsonData['data'] as List<dynamic>)
+          .map((e) => Stop.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final pagination = jsonData['pagination'] as Map<String, dynamic>;
+
+      return StopResponse(
+        pagination['page'] as int,
+        pagination['page_size'] as int,
+        pagination['total'] as int,
+        pagination['total_pages'] as int,
+        stopsList,
+      );
+    } else {
+      return null;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/stop_model.dart';
@@ -12,7 +13,7 @@ import 'package:frontend/view/itinerary/itinerary_view.dart';
 import 'package:frontend/view/map/map_view.dart';
 import 'package:frontend/view/on_boarding/on_boarding_view.dart';
 import 'package:frontend/view/search/search_view.dart';
-import 'package:frontend/viewmodel/bus_viewmodel.dart';
+import 'package:frontend/viewmodel/bus_list_viewmodel.dart';
 import 'package:frontend/viewmodel/history_viewmodel.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
@@ -226,13 +227,14 @@ final appRouter = GoRouter(
           path: Routes.busList.path,
           builder: (context, state) {
             return BusListView(
-              onItemTap: (List<Stop> busStops, String? busName) {
+              onBusTap: (List<Stop> busStops, String? busName) {
                 if (busName == null) return;
                 context.pushNamed(
                   Routes.busDetails.name,
                   extra: {'busName': busName, 'stops': busStops},
                 );
               },
+              onStopTap: (List<Bus> buses, Stop stop) {},
             );
           },
         ),

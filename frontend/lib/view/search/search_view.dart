@@ -123,59 +123,106 @@ class _SearchViewState extends State<SearchView> {
                   ),
                 )
               : vm.searchResponse != null
-              ? Container(
-                  color: AppColors.componentBg,
-                  child: Column(
-                    children: [
-                      for (
-                        int i = 0;
-                        i < vm.searchResponse!.stops.length;
-                        i++
-                      ) ...[
-                        ListTile(
-                          contentPadding: EdgeInsets.only(left: 16, right: 16),
-                          onTap: () => widget.onPlaceTap(
-                            Place(
-                              name: vm.searchResponse!.stops[i].name,
-                              city: '',
-                              lat: vm.searchResponse!.stops[i].lat,
-                              lon: vm.searchResponse!.stops[i].lon,
+              ? Column(
+                  children: [
+                    for (
+                      int i = 0;
+                      i < vm.searchResponse!.stops.length;
+                      i++
+                    ) ...[
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap: () => widget.onPlaceTap(
+                              Place(
+                                name: vm.searchResponse!.stops[i].name,
+                                city: '',
+                                lat: vm.searchResponse!.stops[i].lat,
+                                lon: vm.searchResponse!.stops[i].lon,
+                              ),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.componentBg,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryMain.withAlpha(
+                                          25,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.place,
+                                        color: AppColors.primaryMain,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        spacing: 4,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            vm.searchResponse!.stops[i].name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  color:
+                                                      AppColors.secondaryMain,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+
+                                          if (vm
+                                                  .searchResponse!
+                                                  .stops[i]
+                                                  .bus
+                                                  ?.name !=
+                                              null)
+                                            Text(
+                                              vm
+                                                  .searchResponse!
+                                                  .stops[i]
+                                                  .bus!
+                                                  .name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelMedium
+                                                  ?.copyWith(
+                                                    color: AppColors.grey70,
+                                                  ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: AppColors.grey70,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                          tileColor: AppColors.componentBg,
-                          title: Text(
-                            vm.searchResponse!.stops[i].name,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: AppColors.secondaryShade100),
-                          ),
-                          subtitle:
-                              vm.searchResponse!.stops[i].bus?.name != null
-                              ? Text(
-                                  vm.searchResponse!.stops[i].bus!.name,
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(color: AppColors.grey70),
-                                )
-                              : null,
-                          leading: Icon(
-                            Icons.location_on_outlined,
-                            color: AppColors.grey70,
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            color: AppColors.grey70,
-                          ),
-                        ),
-
-                        if (i != vm.searchResponse!.stops.length - 1)
-                          const Divider(
-                            height: 1,
-                            indent: 16,
-                            endIndent: 16,
-                            color: AppColors.grey95,
-                          ),
-                      ],
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                     ],
-                  ),
+                  ],
                 )
               : Container(),
         ],

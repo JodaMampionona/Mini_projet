@@ -8,7 +8,8 @@ CREATE TABLE "bus_stops"(
     "id" BIGINT NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "lat" DOUBLE PRECISION NOT NULL,
-    "lon" DOUBLE PRECISION NOT NULL
+    "lon" DOUBLE PRECISION NOT NULL,
+    "zone" VARCHAR(255)
 );
 ALTER TABLE
     "bus_stops" ADD PRIMARY KEY("id");

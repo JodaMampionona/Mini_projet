@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
+import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:provider/provider.dart';
 
 class ItineraryView extends StatefulWidget {
@@ -62,12 +63,13 @@ class _ItineraryViewState extends State<ItineraryView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Aucun itinéraire.",
+                    "Aucun itinéraire disponible.",
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  ElevatedButton(
-                    onPressed: () => widget.onNewItineraryTap(context),
-                    child: Text('Nouvel itinéraire'),
+                  CustomIconButton(
+                    onTap: () => widget.onNewItineraryTap(context),
+                    label: 'Nouvel itinéraire',
+                    icon: Icons.add,
                   ),
                 ],
               ),
