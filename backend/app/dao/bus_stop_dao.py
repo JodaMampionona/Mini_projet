@@ -14,7 +14,7 @@ class BusStopDAO(DAOInterface):
             cursor.execute("""
                 SELECT b.id, b.name
                 FROM buses b
-                JOIN bus_stop_link bsl ON b.id = bsl.bus_id
+                JOIN bus_stop_links bsl ON b.id = bsl.bus_id
                 WHERE bsl.stop_id = %s
                 ORDER BY b.id;
             """, (stop_id,))
