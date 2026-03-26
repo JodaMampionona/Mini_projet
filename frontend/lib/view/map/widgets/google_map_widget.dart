@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/itinerary_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapWidget extends StatefulWidget {
+  final List<Stop>? stops;
   final List<Itinerary> itinerary;
   final bool compassEnabled;
   final bool showIntermediateStops;
@@ -16,6 +18,7 @@ class GoogleMapWidget extends StatefulWidget {
     required this.itinerary,
     required this.compassEnabled,
     required this.showIntermediateStops,
+    this.stops,
   });
 
   @override
@@ -29,15 +32,25 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-
-  final ClusterManager _myCluster = ClusterManager(
-    clusterManagerId: ClusterManagerId('my cluster'),
-  );
+  late final ClusterManager _myCluster;
 
   @override
   void initState() {
     super.initState();
     _loadMarkerIcon();
+
+    _myCluster = ClusterManager(
+      clusterManagerId: ClusterManagerId('my cluster'),
+      onClusterTap: (cluster) async {
+        final controller = await _controller.future;
+        final currentZoom = await controller.getZoomLevel();
+        controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(target: cluster.position, zoom: currentZoom + 2),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -46,6 +59,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     final markers = _getMarkers(widget.itinerary, widget.showIntermediateStops);
 
     return GoogleMap(
+      clusterManagers: {_myCluster},
       compassEnabled: widget.compassEnabled,
       mapType: MapType.normal,
       polylines: itineraryPolylines,
@@ -65,6 +79,19 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
           double padding = 0;
           if (context.mounted) {
             padding = MediaQuery.of(context).size.height * 0.1;
+          }
+
+          if (widget.stops != null && widget.stops!.isNotEmpty) {
+            await controller.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: LatLng(widget.stops![0].lat, widget.stops![0].lon),
+                  zoom: 13,
+                ),
+              ),
+              duration: Duration(milliseconds: 700),
+            );
+            return;
           }
 
           if (widget.itinerary.isNotEmpty) {
@@ -123,6 +150,20 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   Set<Marker> _getMarkers(List<Itinerary> itinerary, bool getIntermediate) {
     final markers = <Marker>{};
 
+    if (widget.stops != null) {
+      for (var s in widget.stops!) {
+        markers.add(
+          Marker(
+            anchor: Offset(0.5, 0.5),
+            markerId: MarkerId('start_${s.lat}_${s.lon}'),
+            position: LatLng(s.lat, s.lon),
+            infoWindow: InfoWindow(title: s.name),
+            icon: startMarkerIcon!,
+          ),
+        );
+      }
+    }
+
     if (itinerary.isEmpty ||
         startMarkerIcon == null ||
         endMarkerIcon == null ||
@@ -155,6 +196,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             position: LatLng(point.startLat, point.startLon),
             infoWindow: InfoWindow(title: point.to),
             icon: transferMarker!,
+            clusterManagerId: _myCluster.clusterManagerId,
           ),
         );
       }

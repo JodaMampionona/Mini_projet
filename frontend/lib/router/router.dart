@@ -13,12 +13,15 @@ import 'package:frontend/view/itinerary/itinerary_view.dart';
 import 'package:frontend/view/map/map_view.dart';
 import 'package:frontend/view/on_boarding/on_boarding_view.dart';
 import 'package:frontend/view/search/search_view.dart';
+import 'package:frontend/view/stop_details/stop_details_view.dart';
+import 'package:frontend/viewmodel/bus_details_viewmodel.dart';
 import 'package:frontend/viewmodel/bus_list_viewmodel.dart';
 import 'package:frontend/viewmodel/history_viewmodel.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:frontend/viewmodel/map_viewmodel.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
+import 'package:frontend/viewmodel/stop_details_viewmodel.dart';
 import 'package:frontend/widgets/nav_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -119,10 +122,31 @@ final appRouter = GoRouter(
       path: Routes.busDetails.path,
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>?;
-        final stops = extraData?['stops'] ?? [];
-        final busName = extraData?['busName'] ?? '';
+        final bus = extraData?['bus'] as Bus;
 
-        return BusDetailsView(stops: stops, busName: busName);
+        return ChangeNotifierProvider(
+          create: (_) => BusDetailsViewModel(),
+          child: BusDetailsView(bus: bus),
+        );
+      },
+    ),
+
+    // stop and map
+    GoRoute(
+      name: Routes.stopDetails.name,
+      path: Routes.stopDetails.path,
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, dynamic>?;
+        final stop = extraData?['stop'] as Stop;
+        return ChangeNotifierProvider(
+          create: (_) => StopDetailsViewModel(),
+          child: StopDetailsView(
+            stop: stop,
+            onBusTap: (Bus bus) {
+              context.pushNamed(Routes.busDetails.name, extra: {'bus': bus});
+            },
+          ),
+        );
       },
     ),
 
@@ -227,14 +251,15 @@ final appRouter = GoRouter(
           path: Routes.busList.path,
           builder: (context, state) {
             return BusListView(
-              onBusTap: (List<Stop> busStops, String? busName) {
-                if (busName == null) return;
+              onBusTap: (Bus bus) {
+                context.pushNamed(Routes.busDetails.name, extra: {'bus': bus});
+              },
+              onStopTap: (Stop stop) {
                 context.pushNamed(
-                  Routes.busDetails.name,
-                  extra: {'busName': busName, 'stops': busStops},
+                  Routes.stopDetails.name,
+                  extra: {'stop': stop},
                 );
               },
-              onStopTap: (List<Bus> buses, Stop stop) {},
             );
           },
         ),

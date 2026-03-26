@@ -1,27 +1,32 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/stop_model.dart';
 
 class BusListViewModel extends ChangeNotifier {
   final busModel = BusModel();
   final stopModel = StopModel();
-  int activeTab = 0;
 
+  bool isBusTabActive = true;
   final searchController = TextEditingController();
 
   String? busErrorMsg;
   String? stopErrorMsg;
 
   bool _busLoading = false;
-
   bool _stopLoading = false;
-  bool _newStopLoading = false;
+  bool _stopFetchInProgress = false;
 
   List<Bus>? _buses;
   List<Bus> _filteredBuses = [];
 
   List<Stop>? _stops;
+  List<Stop> _uniqueStops = [];
   List<Stop> _filteredStops = [];
+
+  int _currentPage = 1;
+  int _lastPage = 1;
+
+  int lastBusId = 0;
 
   List<Bus> get buses => _filteredBuses;
 
@@ -31,13 +36,14 @@ class BusListViewModel extends ChangeNotifier {
 
   bool get stopLoading => _stopLoading;
 
-  bool get newStopLoading => _newStopLoading;
-
-  List<Stop> busStops = [];
-  String? selectedBusName;
-
   BusListViewModel() {
     searchController.addListener(_onSearchChanged);
+  }
+
+  void setActiveTab(bool isBus) {
+    isBusTabActive = isBus;
+    searchController.clear();
+    _onSearchChanged();
   }
 
   void fetchBuses() {
@@ -57,56 +63,74 @@ class BusListViewModel extends ChangeNotifier {
         });
   }
 
-  Future<void> fetchBus(int id) async {
-    try {
-      _setBusLoading(true);
-      final result = await busModel.getBus(id);
-      busStops = result.stops;
-      selectedBusName = result.name;
-      busErrorMsg = null;
-    } catch (e) {
-      selectedBusName = null;
-      busErrorMsg = 'Impossible de récupérer les informations de ce bus';
-    } finally {
-      _setBusLoading(false);
+  Future<void> fetchStops({bool reset = false}) async {
+    if (_stopFetchInProgress) return;
+    _stopFetchInProgress = true;
+
+    if (reset) {
+      _currentPage = 1;
+      _lastPage = 1;
+      _stops = null;
+      _uniqueStops = [];
+      _filteredStops = [];
     }
-  }
 
-  void fetchStops() {
     _setStopLoading(true);
-    stopModel
-        .getAll()
-        .then((res) {
-          _stops = res?.data;
 
-          // TODO : garder les stops avec même nom ?
+    try {
+      final seen = <String>{};
+      String? lastZone;
 
-          final seen = <String>{};
-          final uniqueStops = _stops?.where((user) {
-            return seen.add(user.name);
-          }).toList();
+      do {
+        final res = await stopModel.getAll(page: _currentPage);
+        _lastPage = res?.totalPages ?? 1;
 
-          _filteredStops = List.from(uniqueStops ?? []);
-          stopErrorMsg = null;
-        })
-        .catchError((e) {
-          stopErrorMsg = 'Impossible de récupérer les arrêts pour le moment.';
-        })
-        .whenComplete(() {
-          _setStopLoading(false);
-        });
+        final newStops = res?.data ?? [];
+        _stops == null ? _stops = newStops : _stops!.addAll(newStops);
+
+        final uniqueNewStops = newStops.where((stop) {
+          final isNewZone = stop.zone != lastZone;
+          if (isNewZone) {
+            lastZone = stop.zone;
+            seen.clear();
+            seen.add(stop.name);
+            return true;
+          }
+          return seen.add(stop.name);
+        }).toList();
+
+        _uniqueStops.addAll(uniqueNewStops);
+        _filteredStops = List.from(_uniqueStops);
+        stopErrorMsg = null;
+        notifyListeners();
+
+        _currentPage++;
+      } while (_currentPage <= _lastPage);
+    } finally {
+      _stopFetchInProgress = false;
+      _setStopLoading(false);
+    }
   }
 
   void _onSearchChanged() {
     final query = searchController.text.toLowerCase();
 
-    if (_buses == null) return;
-
-    if (query.isEmpty) {
-      _filteredBuses = List.from(_buses!);
+    if (isBusTabActive) {
+      _filteredBuses =
+          _buses
+              ?.where(
+                (b) => query.isEmpty || b.name.toLowerCase().contains(query),
+              )
+              .toList() ??
+          [];
     } else {
-      _filteredBuses = _buses!
-          .where((bus) => bus.name.toLowerCase().contains(query))
+      _filteredStops = _uniqueStops
+          .where(
+            (s) =>
+                query.isEmpty ||
+                s.name.toLowerCase().contains(query) ||
+                s.zone?.toLowerCase().contains(query) == true,
+          )
           .toList();
     }
 
@@ -120,11 +144,6 @@ class BusListViewModel extends ChangeNotifier {
 
   void _setStopLoading(bool val) {
     _stopLoading = val;
-    notifyListeners();
-  }
-
-  void _setNewStopLoading(bool val) {
-    _newStopLoading = val;
     notifyListeners();
   }
 

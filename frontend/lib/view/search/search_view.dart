@@ -37,7 +37,7 @@ class _SearchViewState extends State<SearchView> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(),
+        leading: const BackButton(),
         scrolledUnderElevation: 0,
         title: AppTextField(
           validator: null,
@@ -47,186 +47,173 @@ class _SearchViewState extends State<SearchView> {
         ),
       ),
       body: ListView(
-        padding: EdgeInsets.only(top: 16),
         children: [
-          // error message
-          if (vm.errorMsg != null)
-            Column(
-              children: [
-                ErrorMessage(message: vm.errorMsg!),
-                SizedBox(height: 16),
-              ],
-            ),
-
-          // for geolocation
-          if (widget.showGeolocationPrompt)
-            vm.positionLoading
-                ? Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: Column(
-                        spacing: 8,
-                        children: [
-                          Text('Récupération de votre position...'),
-                          CircularProgressIndicator(
-                            color: AppColors.primaryMain,
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : InkWell(
-                    onTap: () async {
-                      await vm.fetchPlacesByPosition();
-                    },
-                    child: Ink(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      color: AppColors.componentBg,
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          Icon(
-                            Icons.near_me,
-                            color: AppColors.primaryMain,
-                            size: 24,
-                          ),
-                          Text(
-                            'Utiliser ma position actuelle',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: AppColors.primaryShade50),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-          if (widget.showGeolocationPrompt) SizedBox(height: 16),
-
-          // list of results
-          Padding(
-            padding: const EdgeInsets.only(left: 16, bottom: 16),
-            child: Text(
-              'Arrêts proches',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.grey40),
-            ),
-          ),
-
-          vm.loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryMain,
-                  ),
-                )
-              : vm.searchResponse != null
-              ? Column(
-                  children: [
-                    for (
-                      int i = 0;
-                      i < vm.searchResponse!.stops.length;
-                      i++
-                    ) ...[
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () => widget.onPlaceTap(
-                              Place(
-                                name: vm.searchResponse!.stops[i].name,
-                                city: '',
-                                lat: vm.searchResponse!.stops[i].lat,
-                                lon: vm.searchResponse!.stops[i].lon,
-                              ),
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.componentBg,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primaryMain.withAlpha(
-                                          25,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Icon(
-                                        Icons.place,
-                                        color: AppColors.primaryMain,
-                                        size: 20,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        spacing: 4,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            vm.searchResponse!.stops[i].name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.copyWith(
-                                                  color:
-                                                      AppColors.secondaryMain,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-
-                                          if (vm
-                                                  .searchResponse!
-                                                  .stops[i]
-                                                  .bus
-                                                  ?.name !=
-                                              null)
-                                            Text(
-                                              vm
-                                                  .searchResponse!
-                                                  .stops[i]
-                                                  .bus!
-                                                  .name,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelMedium
-                                                  ?.copyWith(
-                                                    color: AppColors.grey70,
-                                                  ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.chevron_right,
-                                      color: AppColors.grey70,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      ),
-                    ],
-                  ],
-                )
-              : Container(),
+          SizedBox(height: 8),
+          _buildError(vm),
+          _buildGeolocation(vm),
+          _buildTitle(context),
+          SizedBox(height: 8),
+          _buildContent(vm),
         ],
       ),
+    );
+  }
+
+  // ---------------- UI SECTIONS ----------------
+
+  Widget _buildError(SearchViewModel vm) {
+    if (vm.errorMsg == null) return const SizedBox();
+
+    return Column(
+      children: [
+        ErrorMessage(message: vm.errorMsg!),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildGeolocation(SearchViewModel vm) {
+    if (!widget.showGeolocationPrompt) return const SizedBox();
+
+    if (vm.positionLoading) {
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                children: [
+                  Text('Récupération de votre position...'),
+                  SizedBox(height: 8),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: vm.fetchPlacesByPosition,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          color: AppColors.componentBg,
+          child: Row(
+            children: [
+              Icon(Icons.near_me, color: AppColors.primaryMain),
+              const SizedBox(width: 8),
+              Text(
+                'Utiliser ma position actuelle',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.primaryShade50,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16),
+      child: Text(
+        'Arrêts proches',
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: AppColors.grey40),
+      ),
+    );
+  }
+
+  Widget _buildContent(SearchViewModel vm) {
+    if (vm.loading) {
+      return Center(
+        child: CircularProgressIndicator(color: AppColors.primaryMain),
+      );
+    }
+
+    if (vm.searchResponse == null || vm.searchResponse!.stops.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    return ListView.builder(
+      padding: EdgeInsets.only(bottom: 8),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: vm.searchResponse!.stops.length,
+      itemBuilder: (context, index) {
+        final stop = vm.searchResponse!.stops[index];
+        final buses = stop.bus;
+
+        final busName = (buses != null && buses.isNotEmpty)
+            ? buses.first.name
+            : null;
+
+        if (busName == null) return SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () => widget.onPlaceTap(
+              Place(name: stop.name, city: '', lat: stop.lat, lon: stop.lon),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.componentBg,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  _buildIcon(),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          stop.name,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AppColors.secondaryMain,
+                                fontWeight: FontWeight.w500,
+                              ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (busName != null)
+                          Text(
+                            busName,
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(color: AppColors.grey70),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.chevron_right, color: AppColors.grey70),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildIcon() {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.primaryMain.withAlpha(25),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(Icons.place, color: AppColors.primaryMain, size: 20),
     );
   }
 }

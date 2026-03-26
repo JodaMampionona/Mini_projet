@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
-import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
+import 'package:frontend/viewmodel/bus_details_viewmodel.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class BusDetailsView extends StatefulWidget {
-  final List<Stop> stops;
-  final String busName;
+  final Bus bus;
 
-  const BusDetailsView({super.key, required this.stops, required this.busName});
+  const BusDetailsView({super.key, required this.bus});
 
   @override
   State<BusDetailsView> createState() => _BusDetailsViewState();
@@ -30,6 +31,10 @@ class _BusDetailsViewState extends State<BusDetailsView> {
     super.initState();
     _sheetController = DraggableScrollableController();
     _sheetController.addListener(_onSheetChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final vm = context.read<BusDetailsViewModel>();
+      vm.fetchBus(widget.bus.id);
+    });
   }
 
   void _onSheetChanged() {
@@ -69,6 +74,8 @@ class _BusDetailsViewState extends State<BusDetailsView> {
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<BusDetailsViewModel>();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -94,20 +101,22 @@ class _BusDetailsViewState extends State<BusDetailsView> {
               child: Transform.translate(
                 offset: Offset(0, _mapOffset),
                 child: GoogleMapWidget(
-                  showIntermediateStops: false,
-                  itinerary: widget.stops
-                      .map(
-                        (stop) => Itinerary(
-                          bus: widget.busName,
-                          from: stop.name,
-                          to: stop.name,
-                          startLat: stop.lat,
-                          startLon: stop.lon,
-                          endLat: stop.lat,
-                          endLon: stop.lon,
-                        ),
-                      )
-                      .toList(),
+                  showIntermediateStops: true,
+                  itinerary: vm.bus != null
+                      ? vm.bus!.stops
+                            .map(
+                              (stop) => Itinerary(
+                                bus: widget.bus.name,
+                                from: stop.name,
+                                to: stop.name,
+                                startLat: stop.lat,
+                                startLon: stop.lon,
+                                endLat: stop.lat,
+                                endLon: stop.lon,
+                              ),
+                            )
+                            .toList()
+                      : [],
                   compassEnabled: false,
                 ),
               ),
@@ -136,7 +145,6 @@ class _BusDetailsViewState extends State<BusDetailsView> {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,7 +158,7 @@ class _BusDetailsViewState extends State<BusDetailsView> {
                                       context,
                                     ).textTheme.headlineSmall,
                                   ),
-                                  Text('Ligne ${widget.busName}'),
+                                  Text('Ligne ${widget.bus.name}'),
                                 ],
                               ),
                               IconButton(
@@ -164,73 +172,91 @@ class _BusDetailsViewState extends State<BusDetailsView> {
                             child: ListView.builder(
                               padding: EdgeInsets.zero,
                               controller: scrollController,
-                              itemCount: widget.stops.length,
+                              itemCount: vm.bus?.stops.length ?? 0,
                               itemBuilder: (context, index) {
-                                final stop = widget.stops[index];
+                                final stop = vm.bus!.stops[index];
                                 final isFirst = index == 0;
-                                final isLast = index == widget.stops.length - 1;
+                                final isLast =
+                                    index == vm.bus!.stops.length - 1;
 
-                                return IntrinsicHeight(
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      SizedBox(
-                                        width: 30,
-                                        child: Column(
+                                return vm.bus == null
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Nous n\'avons pas pu récupérer les informations concernant cette ligne de bus.',
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Veuillez vérifier votre connexion internet.',
+                                          ),
+                                        ],
+                                      )
+                                    : IntrinsicHeight(
+                                        child: Row(
                                           children: [
-                                            Expanded(
-                                              child: Container(
-                                                width: 2,
-                                                color: isFirst
-                                                    ? Colors.transparent
-                                                    : AppColors.secondaryMain,
-                                              ),
-                                            ),
-                                            CircleAvatar(
-                                              radius: 10,
-                                              backgroundColor: isFirst || isLast
-                                                  ? AppColors.primaryMain
-                                                  : AppColors.secondaryMain,
-                                              child: Text(
-                                                stop.order.toString(),
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .labelSmall
-                                                    ?.copyWith(
-                                                      color:
-                                                          AppColors.componentBg,
+                                            SizedBox(
+                                              width: 30,
+                                              child: Column(
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      width: 2,
+                                                      color: isFirst
+                                                          ? Colors.transparent
+                                                          : AppColors
+                                                                .secondaryMain,
                                                     ),
+                                                  ),
+                                                  CircleAvatar(
+                                                    radius: 10,
+                                                    backgroundColor:
+                                                        isFirst || isLast
+                                                        ? AppColors.primaryMain
+                                                        : AppColors
+                                                              .secondaryMain,
+                                                    child: Text(
+                                                      stop.rank.toString(),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .labelSmall
+                                                          ?.copyWith(
+                                                            color: AppColors
+                                                                .componentBg,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Container(
+                                                      width: 2,
+                                                      color: isLast
+                                                          ? Colors.transparent
+                                                          : AppColors
+                                                                .secondaryMain,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                             Expanded(
-                                              child: Container(
-                                                width: 2,
-                                                color: isLast
-                                                    ? Colors.transparent
-                                                    : AppColors.secondaryMain,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 16,
+                                                      horizontal: 8,
+                                                    ),
+                                                child: Text(
+                                                  stop.name,
+                                                  style: Theme.of(
+                                                    context,
+                                                  ).textTheme.bodySmall,
+                                                ),
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 16,
-                                            horizontal: 8,
-                                          ),
-                                          child: Text(
-                                            stop.name,
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodySmall,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
+                                      );
                               },
                             ),
                           ),

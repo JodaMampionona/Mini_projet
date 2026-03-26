@@ -88,6 +88,12 @@ class AppTheme {
       selectionHandleColor: AppColors.secondaryShade100,
     ),
 
+    // chip
+    chipTheme: ChipThemeData(
+      color: WidgetStatePropertyAll(AppColors.primaryTint50),
+      side: BorderSide(color: AppColors.primaryMain, width: 1),
+    ),
+
     textTheme: TextTheme(
       // display
       displayLarge: GoogleFonts.dmSans(

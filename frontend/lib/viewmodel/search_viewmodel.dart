@@ -6,7 +6,6 @@ import 'package:frontend/model/search_response.dart';
 import 'package:frontend/model/stop_model.dart';
 
 class SearchViewModel extends ChangeNotifier {
-  final placeModel = PlaceModel();
   final stopModel = StopModel();
 
   SearchResponse? searchResponse;
@@ -39,7 +38,7 @@ class SearchViewModel extends ChangeNotifier {
       }
       errorMsg = null;
     } catch (e) {
-      searchResponse = null;
+      debugPrint(e.toString());
     } finally {
       loading = false;
       safeNotifyListeners();
@@ -64,7 +63,7 @@ class SearchViewModel extends ChangeNotifier {
       positionLoading = true;
       errorMsg = null;
       safeNotifyListeners();
-      return await placeModel.getCurrentLocation();
+      return await PlaceModel.getCurrentLocation();
     } catch (e) {
       errorMsg = "Impossible de récupérer les arrêts proches de vous.";
       safeNotifyListeners();
@@ -91,7 +90,9 @@ class SearchViewModel extends ChangeNotifier {
     _debounce?.cancel();
 
     final currentText = placeController.text.trim();
-    if (currentText == _previousText) return; // pas de changement réel
+    if (currentText == _previousText) {
+      return; // pas de changement réel
+    }
 
     _debounce = Timer(const Duration(milliseconds: 400), () {
       _previousText = currentText;
@@ -102,9 +103,9 @@ class SearchViewModel extends ChangeNotifier {
   List<Stop> _unique(List<Stop> stops) {
     final seen = <String>{};
     final uniqueStops = <Stop>[];
-
     for (final stop in stops) {
-      final key = '${stop.name}_${stop.bus?.id ?? 'null'}';
+      final key =
+          '${stop.name}_${stop.bus != null && stop.bus!.isNotEmpty ? stop.bus!.first.id : ''}';
       if (!seen.contains(key)) {
         seen.add(key);
         uniqueStops.add(stop);

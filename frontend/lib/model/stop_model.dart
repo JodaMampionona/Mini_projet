@@ -22,7 +22,7 @@ class StopResponse {
     return StopResponse(
       json['pagination']['page'] as int,
       json['pagination']['page_size'] as int,
-      json['pagination']['total'] as int,
+      json['pagination']['total_stops'] as int,
       json['pagination']['total_pages'] as int,
       (json['data'] as List<dynamic>)
           .map((e) => Stop.fromJson(e as Map<String, dynamic>))
@@ -36,19 +36,39 @@ class Stop {
   final String name;
   final double lat;
   final double lon;
-  final int order;
-  final Bus? bus;
-  final int? distance;
+  final String? zone;
+  final List<Bus>? bus;
+  final int? rank;
 
   const Stop({
     required this.id,
     required this.name,
     required this.lat,
     required this.lon,
-    required this.order,
-    required this.bus,
-    required this.distance,
+    this.zone,
+    this.bus,
+    this.rank,
   });
+
+  Stop copyWith({
+    int? id,
+    String? name,
+    double? lat,
+    double? lon,
+    String? zone,
+    List<Bus>? bus,
+    int? rank,
+  }) {
+    return Stop(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      lat: lat ?? this.lat,
+      lon: lon ?? this.lon,
+      zone: zone ?? this.zone,
+      bus: bus ?? this.bus,
+      rank: rank ?? this.rank,
+    );
+  }
 
   factory Stop.fromJson(Map<String, dynamic> json) {
     return Stop(
@@ -56,16 +76,31 @@ class Stop {
       name: json['name'] as String,
       lat: (json['lat'] as num).toDouble(),
       lon: (json['lon'] as num).toDouble(),
-      order: json['order'] ?? 0,
-      bus: json['bus'] != null ? Bus.fromJson(json['bus']) : null,
-      distance: json['distance'] == null ? null : json['distance'] as int,
+      zone: json['zone'] == null ? null : json['zone'] as String,
+      bus: json['bus'] == null
+          ? null
+          : (json['bus'] as List<dynamic>)
+                .map((e) => Bus.fromJson(e as Map<String, dynamic>))
+                .toList(),
+      rank: json['rank'] == null ? null : json['rank'] as int,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'lat': lat,
+    'lon': lon,
+    if (rank != null) 'rank': rank,
+    if (zone != null) 'zone': zone,
+    if (bus != null) 'bus': bus!.map((b) => b.toJson()).toList(),
+  };
 }
 
 class StopModel {
   Future<SearchResponse?> getStopsByPlaceName(String query) async {
     final response = await dio.get('/itinerary/search?q=$query');
+    print(response);
     return SearchResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
@@ -82,22 +117,14 @@ class StopModel {
 
     if (response.statusCode == 200) {
       final jsonData = response.data as Map<String, dynamic>;
-
-      final stopsList = (jsonData['data'] as List<dynamic>)
-          .map((e) => Stop.fromJson(e as Map<String, dynamic>))
-          .toList();
-
-      final pagination = jsonData['pagination'] as Map<String, dynamic>;
-
-      return StopResponse(
-        pagination['page'] as int,
-        pagination['page_size'] as int,
-        pagination['total'] as int,
-        pagination['total_pages'] as int,
-        stopsList,
-      );
+      return StopResponse.fromJson(jsonData);
     } else {
       return null;
     }
+  }
+
+  Future<Stop?> getById(int id) async {
+    final response = await dio.get('/bus_stops/?id=$id');
+    return Stop.fromJson(response.data as Map<String, dynamic>);
   }
 }

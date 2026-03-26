@@ -21,10 +21,18 @@ class Bus {
                 .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'itinerary': stops.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class BusModel {
-  Future<Bus> getBus(int id) async {
+  Future<Bus> getById(int id) async {
     final response = await dio.get('/bus?bus_id=$id');
     return Bus.fromJson(response.data as Map<String, dynamic>);
   }

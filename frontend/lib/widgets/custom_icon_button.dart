@@ -21,7 +21,7 @@ class CustomIconButton extends StatelessWidget {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.only(
-          left: 14,
+          left: 12,
           right: 16,
           top: 12,
           bottom: 12,

@@ -35,7 +35,7 @@ class Place {
 class PlaceModel {
   List<Place> places = [];
 
-  Future<Place> getCurrentLocation() async {
+  static Future<Place> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 

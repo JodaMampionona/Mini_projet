@@ -9,8 +9,8 @@ import 'package:frontend/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
 
 class BusListView extends StatefulWidget {
-  final Function(List<Stop> busStops, String? busName) onBusTap;
-  final Function(List<Bus> buses, Stop stop) onStopTap;
+  final Function(Bus bus) onBusTap;
+  final Function(Stop stop) onStopTap;
 
   const BusListView({
     super.key,
@@ -25,21 +25,49 @@ class BusListView extends StatefulWidget {
 class _BusListViewState extends State<BusListView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late ScrollController _busScrollController;
+  late ScrollController _stopScrollController;
+
+  bool _showFab = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _busScrollController = ScrollController();
+    _stopScrollController = ScrollController();
+
+    _busScrollController.addListener(_updateFab);
+    _stopScrollController.addListener(_updateFab);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final vm = context.read<BusListViewModel>();
+      _tabController.addListener(() {
+        if (!_tabController.indexIsChanging) {
+          vm.setActiveTab(_tabController.index == 0);
+          _updateFab();
+        }
+      });
       if (vm.buses.isEmpty) vm.fetchBuses();
       if (vm.stops.isEmpty) vm.fetchStops();
     });
   }
 
+  void _updateFab() {
+    final controller = _tabController.index == 0
+        ? _busScrollController
+        : _stopScrollController;
+    final show = controller.hasClients && controller.offset > 200;
+    if (show != _showFab) setState(() => _showFab = show);
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
+    _busScrollController.removeListener(_updateFab);
+    _stopScrollController.removeListener(_updateFab);
+    _busScrollController.dispose();
+    _stopScrollController.dispose();
     super.dispose();
   }
 
@@ -50,7 +78,7 @@ class _BusListViewState extends State<BusListView>
       appBar: AppBar(
         title: Column(
           children: [
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             AppTextField(
               validator: null,
               icon: Icons.search,
@@ -67,8 +95,8 @@ class _BusListViewState extends State<BusListView>
           dividerColor: AppColors.grey95,
           indicatorColor: AppColors.primaryMain,
           indicatorWeight: 2,
-          labelColor: AppColors.primaryMain,
-          unselectedLabelColor: AppColors.grey60,
+          labelColor: AppColors.secondaryShade100,
+          unselectedLabelColor: AppColors.grey40,
           labelStyle: Theme.of(context).textTheme.bodyMedium,
           tabs: const [
             Tab(
@@ -91,10 +119,37 @@ class _BusListViewState extends State<BusListView>
       body: TabBarView(
         controller: _tabController,
         children: [
-          BusListTab(vm: vm, onBusTap: widget.onBusTap),
-          StopListTab(vm: vm, onStopTap: widget.onStopTap),
+          BusListTab(
+            vm: vm,
+            onBusTap: widget.onBusTap,
+            scrollController: _busScrollController,
+          ),
+          StopListTab(
+            vm: vm,
+            onStopTap: widget.onStopTap,
+            scrollController: _stopScrollController,
+          ),
         ],
       ),
+      floatingActionButton: _showFab
+          ? FloatingActionButton(
+              backgroundColor: AppColors.secondaryMain,
+              foregroundColor: AppColors.primaryTint100,
+              shape: const CircleBorder(),
+              elevation: 0.5,
+              onPressed: () {
+                final controller = _tabController.index == 0
+                    ? _busScrollController
+                    : _stopScrollController;
+                controller.animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeOut,
+                );
+              },
+              child: const Icon(Icons.keyboard_arrow_up),
+            )
+          : null,
     );
   }
 }

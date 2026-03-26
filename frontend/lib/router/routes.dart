@@ -12,5 +12,9 @@ class Routes {
   static final itinerary = Route(path: '/itinerary', name: '/itinerary');
   static final busList = Route(path: '/bus-list', name: '/bus-list');
   static final busDetails = Route(path: '/bus-details', name: '/bus-details');
+  static final stopDetails = Route(
+    path: '/stop-details',
+    name: '/stop-details',
+  );
   static final history = Route(path: '/history', name: '/history');
 }
