@@ -32,38 +32,22 @@ class _ItineraryViewState extends State<ItineraryView> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<ItineraryViewModel>();
-    final itinerary = viewModel.itinerary;
+    final vm = context.watch<ItineraryViewModel>();
+    final itinerary = vm.itinerary;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Itinéraire'),
         leading: BackButton(onPressed: () => widget.onBackPress(context)),
       ),
-      body: viewModel.loading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: AppColors.primaryMain),
-                  SizedBox(height: 16),
-                  Text(
-                    'Chargement de l\'itinéraire',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: AppColors.grey50),
-                  ),
-                ],
-              ),
-            )
-          : itinerary.isEmpty
+      body: itinerary.isEmpty
           ? Center(
               child: Column(
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Aucun itinéraire disponible.",
+                    "Aucun itinéraire pour le moment.",
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   CustomIconButton(
@@ -113,6 +97,36 @@ class _ItineraryViewState extends State<ItineraryView> {
                     ),
                   ),
                 ),
+
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    spacing: 32,
+                    children: [
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Icon(Icons.route),
+                          Text(
+                            "${vm.distance.toStringAsFixed(2).toString()} km",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Icon(Icons.access_time),
+                          Text(
+                            vm.durationFormatted,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
                 Expanded(
                   child: ListView.separated(
                     padding: EdgeInsets.all(16),

@@ -137,8 +137,6 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     final List<LatLng> polylinePoints = [];
 
     for (final segment in itinerary) {
-      print('hi');
-      print(segment.busStops);
       if (traceStops && segment.busStops.isNotEmpty) {
         for (final stop in segment.busStops) {
           polylinePoints.add(LatLng(stop.lat, stop.lon));
