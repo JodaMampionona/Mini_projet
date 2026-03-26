@@ -85,7 +85,7 @@ class _SearchViewState extends State<SearchView> {
                 children: [
                   Text('Récupération de votre position...'),
                   SizedBox(height: 8),
-                  CircularProgressIndicator(),
+                  CircularProgressIndicator(color: AppColors.primaryMain),
                 ],
               ),
             ),
@@ -186,12 +186,12 @@ class _SearchViewState extends State<SearchView> {
                               ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (busName != null)
-                          Text(
-                            busName,
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(color: AppColors.grey70),
-                          ),
+
+                        Text(
+                          busName,
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(color: AppColors.grey70),
+                        ),
                       ],
                     ),
                   ),
