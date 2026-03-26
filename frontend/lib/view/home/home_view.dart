@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
 import 'package:frontend/widgets/confirm_dialog.dart';
 import 'package:frontend/widgets/history_item.dart';
@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 class HomeView extends StatefulWidget {
   final Function() onSearchItineraryPress;
   final Function(HomeViewModel) onHistoryPress;
-  final Function(Place, Place) onHistoryItemTap;
+  final Function(BusStop, BusStop) onHistoryItemTap;
 
   const HomeView({
     super.key,

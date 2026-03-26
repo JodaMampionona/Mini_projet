@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 // api
 const apiAuthority = 'http://192.168.1.82:8000';
@@ -20,19 +21,19 @@ final dio =
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
-            print(
+            debugPrint(
               'REQUEST[${options.method}] => PATH: ${options.path} param : ${options.queryParameters}',
             );
             return handler.next(options);
           },
           onResponse: (response, handler) {
-            print(
+            debugPrint(
               'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}',
             );
             return handler.next(response);
           },
           onError: (err, handler) {
-            print(
+            debugPrint(
               'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}',
             );
             return handler.next(err);

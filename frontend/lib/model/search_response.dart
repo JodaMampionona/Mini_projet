@@ -4,7 +4,7 @@ class SearchResponse {
   final String placeName;
   final double lat;
   final double lon;
-  final List<Stop> stops;
+  final List<BusStop> stops;
 
   const SearchResponse({
     required this.placeName,
@@ -19,7 +19,7 @@ class SearchResponse {
       lat: (json['coordinates']['lat'] as num).toDouble(),
       lon: (json['coordinates']['lon'] as num).toDouble(),
       stops: (json['stops'] as List<dynamic>)
-          .map((e) => Stop.fromJson(e as Map<String, dynamic>))
+          .map((e) => BusStop.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -29,13 +29,13 @@ class SearchResponse {
     String? placeName,
     double? lat,
     double? lon,
-    List<Stop>? stops,
+    List<BusStop>? stops,
   }) {
     return SearchResponse(
       placeName: placeName ?? this.placeName,
       lat: lat ?? this.lat,
       lon: lon ?? this.lon,
-      stops: stops ?? List<Stop>.from(this.stops),
+      stops: stops ?? List<BusStop>.from(this.stops),
     );
   }
 }

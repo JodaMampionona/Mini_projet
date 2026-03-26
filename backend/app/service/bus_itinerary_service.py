@@ -216,6 +216,7 @@ class BusItineraryService:
                         "bus": [bus] if bus else [],
                         "lat": stop.lat,
                         "lon": stop.lon,
+                        "zone": stop.zone,
                         "distance_m": round(dist * 1000)
                     })
 

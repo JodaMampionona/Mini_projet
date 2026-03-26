@@ -8,7 +8,7 @@ import 'package:frontend/model/stop_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapWidget extends StatefulWidget {
-  final List<Stop>? stops;
+  final List<BusStop>? stops;
   final List<Itinerary> itinerary;
   final bool compassEnabled;
   final bool showIntermediateStops;

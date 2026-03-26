@@ -1,12 +1,13 @@
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryEntry {
   final DateTime searchedAt;
-  final Place start;
-  final Place end;
+  final BusStop start;
+  final BusStop end;
 
   const HistoryEntry({
     required this.searchedAt,
@@ -25,8 +26,8 @@ class HistoryEntry {
   factory HistoryEntry.fromJson(Map<String, dynamic> json) {
     return HistoryEntry(
       searchedAt: DateTime.parse(json['searchedAt'] as String),
-      start: Place.fromJson(json['start'] as Map<String, dynamic>),
-      end: Place.fromJson(json['end'] as Map<String, dynamic>),
+      start: BusStop.fromJson(json['start'] as Map<String, dynamic>),
+      end: BusStop.fromJson(json['end'] as Map<String, dynamic>),
     );
   }
 }

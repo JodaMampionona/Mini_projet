@@ -1,4 +1,5 @@
 import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/utils/dio_util.dart';
 
 class Itinerary {
@@ -34,15 +35,41 @@ class Itinerary {
 }
 
 class ItineraryModel {
-  Future<List<Itinerary>?> getItinerary(Place start, Place destination) async {
+  Future<List<Itinerary>?> getItineraryByGps(
+    Place start,
+    Place destination,
+  ) async {
     try {
       final response = await dio.get(
-        '/itinerary/',
+        '/itinerary/by_gps',
         queryParameters: {
           'start_lat': start.lat,
           'start_lon': start.lon,
           'destination_lat': destination.lat,
           'destination_lon': destination.lon,
+        },
+      );
+
+      final data = response.data;
+
+      if (data is! List) return [];
+
+      return data.map<Itinerary>((json) => Itinerary.fromJson(json)).toList();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<List<Itinerary>?> getItineraryByStopIds(
+    BusStop start,
+    BusStop destination,
+  ) async {
+    try {
+      final response = await dio.get(
+        '/itinerary/by_stop_ids',
+        queryParameters: {
+          'start_id': start.id,
+          'destination_id': destination.id,
         },
       );
 

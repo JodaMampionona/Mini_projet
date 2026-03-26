@@ -30,8 +30,6 @@ class TopInputs extends StatefulWidget {
 }
 
 class _TopInputsState extends State<TopInputs> with TickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
-
   late AnimationController _startControllerAnim;
   late AnimationController _destControllerAnim;
 
@@ -175,7 +173,6 @@ class _TopInputsState extends State<TopInputs> with TickerProviderStateMixin {
                     ],
                   ),
 
-                  /// SWAP BUTTON
                   Positioned(
                     right: 0,
                     top: 28,

@@ -9,7 +9,7 @@ import 'package:frontend/widgets/custom_icon_button.dart';
 class StopListTab extends StatelessWidget {
   final ScrollController scrollController;
   final BusListViewModel vm;
-  final Function(Stop stop) onStopTap;
+  final Function(BusStop stop) onStopTap;
 
   const StopListTab({
     super.key,

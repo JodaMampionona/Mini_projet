@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
-import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/provider/session_state_provider.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
@@ -64,13 +63,13 @@ final appRouter = GoRouter(
             inputPlaceholder: isStart
                 ? 'Où vous trouvez-vous ?'
                 : 'Où voulez-vous aller ?',
-            onPlaceTap: (place) {
-              final extra = {isStart ? 'start' : 'end': place};
+            onBusStopTap: (busStop) {
+              final extra = {isStart ? 'start' : 'end': busStop};
               if ((from as String).startsWith(Routes.home.name) ||
                   from.startsWith(Routes.history.name)) {
                 context.goNamed(Routes.map.name, extra: extra);
               } else {
-                context.pop(place);
+                context.pop(busStop);
               }
             },
           ),
@@ -86,7 +85,7 @@ final appRouter = GoRouter(
         return ChangeNotifierProvider(
           create: (_) => HistoryViewModel(),
           child: HistoryView(
-            onHistoryItemTap: (Place start, Place end) {
+            onHistoryItemTap: (BusStop start, BusStop end) {
               context.goNamed(
                 Routes.map.name,
                 extra: {'start': start, 'end': end},
@@ -137,7 +136,7 @@ final appRouter = GoRouter(
       path: Routes.stopDetails.path,
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>?;
-        final stop = extraData?['stop'] as Stop;
+        final stop = extraData?['stop'] as BusStop;
         return ChangeNotifierProvider(
           create: (_) => StopDetailsViewModel(),
           child: StopDetailsView(
@@ -202,7 +201,7 @@ final appRouter = GoRouter(
                 extra: {'isStart': false, 'from': Routes.home.name},
               );
             },
-            onHistoryItemTap: (Place start, Place end) {
+            onHistoryItemTap: (BusStop start, BusStop end) {
               context.goNamed(
                 Routes.map.name,
                 extra: {'start': start, 'end': end},
@@ -229,18 +228,18 @@ final appRouter = GoRouter(
                 );
               },
               onStartTap: (context, vm) async {
-                final place = await context.pushNamed<Place>(
+                final busStop = await context.pushNamed<BusStop>(
                   Routes.search.name,
                   extra: {'isStart': true},
                 );
-                vm.updateStartController(place);
+                vm.updateStart(busStop);
               },
               onEndTap: (context, vm) async {
-                final place = await context.pushNamed<Place>(
+                final busStop = await context.pushNamed<BusStop>(
                   Routes.search.name,
                   extra: {'isStart': false},
                 );
-                vm.updateDestController(place);
+                vm.updateEnd(busStop);
               },
             );
           },
@@ -254,7 +253,7 @@ final appRouter = GoRouter(
               onBusTap: (Bus bus) {
                 context.pushNamed(Routes.busDetails.name, extra: {'bus': bus});
               },
-              onStopTap: (Stop stop) {
+              onStopTap: (BusStop stop) {
                 context.pushNamed(
                   Routes.stopDetails.name,
                   extra: {'stop': stop},

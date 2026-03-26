@@ -19,9 +19,9 @@ class BusListViewModel extends ChangeNotifier {
   List<Bus>? _buses;
   List<Bus> _filteredBuses = [];
 
-  List<Stop>? _stops;
-  List<Stop> _uniqueStops = [];
-  List<Stop> _filteredStops = [];
+  List<BusStop>? _stops;
+  List<BusStop> _uniqueStops = [];
+  List<BusStop> _filteredStops = [];
 
   int _currentPage = 1;
   int _lastPage = 1;
@@ -30,7 +30,7 @@ class BusListViewModel extends ChangeNotifier {
 
   List<Bus> get buses => _filteredBuses;
 
-  List<Stop> get stops => _filteredStops;
+  List<BusStop> get stops => _filteredStops;
 
   bool get busLoading => _busLoading;
 

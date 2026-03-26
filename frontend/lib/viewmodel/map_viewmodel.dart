@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/history_model.dart';
-import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
+import 'package:frontend/model/stop_model.dart';
 
 class MapViewModel extends ChangeNotifier {
   final itineraryModel = ItineraryModel();
@@ -9,42 +9,36 @@ class MapViewModel extends ChangeNotifier {
   List<Itinerary> itinerary = [];
 
   bool loading = false;
-  Place? start;
-  Place? end;
+  BusStop? start;
+  BusStop? end;
 
   // controllers
   final TextEditingController startController = TextEditingController();
   final TextEditingController destController = TextEditingController();
 
-  void updateControllers({String? start, String? dest}) {
-    if (start != null) startController.text = start;
-    if (dest != null) destController.text = dest;
-  }
-
   void swapStartAndDestination() {
     // swap controller values
-    var startValue = startController.text;
+    final startValue = startController.text;
     startController.text = destController.text;
     destController.text = startValue;
 
-    // swap id values
-    var tmp = start;
+    final tmp = start;
     start = end;
     end = tmp;
     notifyListeners();
   }
 
-  void updateStartController(Place? place) {
-    if (place == null) return;
-    startController.text = place.name;
-    start = place;
+  void updateStart(BusStop? busStop) {
+    if (busStop == null) return;
+    startController.text = busStop.name;
+    start = busStop;
     notifyListeners();
   }
 
-  void updateDestController(Place? place) {
-    if (place == null) return;
-    destController.text = place.name;
-    end = place;
+  void updateEnd(BusStop? busStop) {
+    if (busStop == null) return;
+    destController.text = busStop.name;
+    end = busStop;
     notifyListeners();
   }
 
@@ -64,7 +58,7 @@ class MapViewModel extends ChangeNotifier {
       end: end!,
     );
     itineraryModel
-        .getItinerary(start!, end!)
+        .getItineraryByStopIds(start!, end!)
         .then((result) {
           if (result != null) {
             itinerary = result;

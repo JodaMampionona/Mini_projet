@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/router/routes.dart';
 import 'package:frontend/viewmodel/history_viewmodel.dart';
 import 'package:frontend/widgets/confirm_dialog.dart';
@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HistoryView extends StatefulWidget {
-  final Function(Place, Place) onHistoryItemTap;
+  final Function(BusStop, BusStop) onHistoryItemTap;
 
   const HistoryView({super.key, required this.onHistoryItemTap});
 

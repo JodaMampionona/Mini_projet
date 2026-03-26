@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
@@ -9,8 +9,8 @@ import '../../constants/app_colors.dart';
 import '../../viewmodel/map_viewmodel.dart';
 
 class MapView extends StatefulWidget {
-  final Place? start;
-  final Place? end;
+  final BusStop? start;
+  final BusStop? end;
   final Function(BuildContext, MapViewModel) onSeeItineraryTap;
   final Function(BuildContext) onBackTap;
   final Function(BuildContext, MapViewModel) onStartTap;
@@ -34,13 +34,6 @@ class _MapViewState extends State<MapView> {
   @override
   void initState() {
     final vm = context.read<MapViewModel>();
-
-    if (widget.start != null) {
-      vm.updateStartController(widget.start);
-    }
-    if (widget.end != null) {
-      vm.updateDestController(widget.end);
-    }
 
     if (widget.start != null && widget.end != null) {
       vm.getItinerary();

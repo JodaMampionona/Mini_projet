@@ -3,7 +3,7 @@ import 'package:frontend/model/stop_model.dart';
 
 class StopDetailsViewModel extends ChangeNotifier {
   final stopModel = StopModel();
-  Stop? stop;
+  BusStop? stop;
 
   bool loading = true;
 

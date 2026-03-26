@@ -8,7 +8,9 @@ import 'package:frontend/model/stop_model.dart';
 class SearchViewModel extends ChangeNotifier {
   final stopModel = StopModel();
 
-  SearchResponse? searchResponse;
+  SearchResponse? _searchResponse;
+
+  SearchResponse? get searchResponse => _searchResponse;
 
   String? errorMsg;
 
@@ -34,11 +36,11 @@ class SearchViewModel extends ChangeNotifier {
     try {
       SearchResponse? result = await stopModel.getStopsByPlaceName(query);
       if (result != null) {
-        searchResponse = result.copyWith(stops: _unique(result.stops));
+        _searchResponse = result.copyWith(stops: _unique(result.stops));
       }
       errorMsg = null;
     } catch (e) {
-      debugPrint(e.toString());
+      errorMsg = "Connexion internet instable.";
     } finally {
       loading = false;
       safeNotifyListeners();
@@ -52,8 +54,9 @@ class SearchViewModel extends ChangeNotifier {
       safeNotifyListeners();
 
       if (position != null) {
-        searchResponse = await stopModel.getStopsNearPlace(position);
+        _searchResponse = await stopModel.getStopsNearPlace(position);
       }
+      errorMsg = null;
     } catch (e) {
       errorMsg =
           'Impossible de récupérer les arrêts proches de votre position.\nActivez la localisation de votre téléphone et vérifiez votre connexion internet';
@@ -93,17 +96,22 @@ class SearchViewModel extends ChangeNotifier {
     });
   }
 
-  List<Stop> _unique(List<Stop> stops) {
-    final seen = <String>{};
-    final uniqueStops = <Stop>[];
+  List<BusStop> _unique(List<BusStop> stops) {
+    final seenNames = <String>{};
+    final uniqueStops = <BusStop>[];
+
     for (final stop in stops) {
-      final key =
-          '${stop.name}_${stop.bus != null && stop.bus!.isNotEmpty ? stop.bus!.first.id : ''}';
-      if (!seen.contains(key)) {
-        seen.add(key);
+      if (!seenNames.contains(stop.name)) {
+        seenNames.add(stop.name);
         uniqueStops.add(stop);
       }
     }
+
+    uniqueStops.sort((a, b) {
+      if (a.zone == null) return 1;
+      if (b.zone == null) return -1;
+      return a.zone!.compareTo(b.zone!);
+    });
 
     return uniqueStops;
   }

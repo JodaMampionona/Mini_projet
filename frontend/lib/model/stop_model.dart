@@ -3,14 +3,14 @@ import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/search_response.dart';
 import 'package:frontend/utils/dio_util.dart';
 
-class StopResponse {
+class StopListResponse {
   final int page;
   final int pageSize;
   final int total;
   final int totalPages;
-  final List<Stop> data;
+  final List<BusStop> data;
 
-  StopResponse(
+  StopListResponse(
     this.page,
     this.pageSize,
     this.total,
@@ -18,20 +18,20 @@ class StopResponse {
     this.data,
   );
 
-  factory StopResponse.fromJson(Map<String, dynamic> json) {
-    return StopResponse(
+  factory StopListResponse.fromJson(Map<String, dynamic> json) {
+    return StopListResponse(
       json['pagination']['page'] as int,
       json['pagination']['page_size'] as int,
       json['pagination']['total_stops'] as int,
       json['pagination']['total_pages'] as int,
       (json['data'] as List<dynamic>)
-          .map((e) => Stop.fromJson(e as Map<String, dynamic>))
+          .map((e) => BusStop.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
 }
 
-class Stop {
+class BusStop {
   final int id;
   final String name;
   final double lat;
@@ -40,7 +40,7 @@ class Stop {
   final List<Bus>? bus;
   final int? rank;
 
-  const Stop({
+  const BusStop({
     required this.id,
     required this.name,
     required this.lat,
@@ -50,7 +50,7 @@ class Stop {
     this.rank,
   });
 
-  Stop copyWith({
+  BusStop copyWith({
     int? id,
     String? name,
     double? lat,
@@ -59,7 +59,7 @@ class Stop {
     List<Bus>? bus,
     int? rank,
   }) {
-    return Stop(
+    return BusStop(
       id: id ?? this.id,
       name: name ?? this.name,
       lat: lat ?? this.lat,
@@ -70,8 +70,8 @@ class Stop {
     );
   }
 
-  factory Stop.fromJson(Map<String, dynamic> json) {
-    return Stop(
+  factory BusStop.fromJson(Map<String, dynamic> json) {
+    return BusStop(
       id: json['id'] as int,
       name: json['name'] as String,
       lat: (json['lat'] as num).toDouble(),
@@ -100,7 +100,6 @@ class Stop {
 class StopModel {
   Future<SearchResponse?> getStopsByPlaceName(String query) async {
     final response = await dio.get('/itinerary/search?q=$query');
-    print(response);
     return SearchResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
@@ -111,20 +110,20 @@ class StopModel {
     return SearchResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<StopResponse?> getAll({int? page}) async {
+  Future<StopListResponse?> getAll({int? page}) async {
     final pageQuery = page != null ? '?page=$page' : '';
     final response = await dio.get('/bus_stops/$pageQuery');
 
     if (response.statusCode == 200) {
       final jsonData = response.data as Map<String, dynamic>;
-      return StopResponse.fromJson(jsonData);
+      return StopListResponse.fromJson(jsonData);
     } else {
       return null;
     }
   }
 
-  Future<Stop?> getById(int id) async {
+  Future<BusStop?> getById(int id) async {
     final response = await dio.get('/bus_stops/?id=$id');
-    return Stop.fromJson(response.data as Map<String, dynamic>);
+    return BusStop.fromJson(response.data as Map<String, dynamic>);
   }
 }

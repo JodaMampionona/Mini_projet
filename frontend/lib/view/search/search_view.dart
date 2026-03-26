@@ -1,20 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/place_model.dart';
+import 'package:frontend/model/stop_model.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
-import 'package:frontend/widgets/app_text_field.dart';
 import 'package:frontend/widgets/app_flushbar.dart';
+import 'package:frontend/widgets/app_text_field.dart';
 import 'package:provider/provider.dart';
 
 class SearchView extends StatefulWidget {
   final String inputPlaceholder;
-  final Function(Place) onPlaceTap;
+  final Function(BusStop) onBusStopTap;
   final bool showGeolocationPrompt;
 
   const SearchView({
     super.key,
     required this.inputPlaceholder,
-    required this.onPlaceTap,
+    required this.onBusStopTap,
     required this.showGeolocationPrompt,
   });
 
@@ -23,6 +25,8 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
+  bool _showErrorMsg = true;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +38,21 @@ class _SearchViewState extends State<SearchView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SearchViewModel>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (vm.errorMsg != null && _showErrorMsg) {
+        Future.delayed(Duration(seconds: 3), () {
+          if (context.mounted) {
+            AppFlushBar.showInfo(context, message: vm.errorMsg!);
+          }
+        });
+
+        _showErrorMsg = false;
+        Timer(Duration(seconds: 10), () {
+          _showErrorMsg = true;
+        });
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -60,12 +79,6 @@ class _SearchViewState extends State<SearchView> {
 
   Widget _buildGeolocation(SearchViewModel vm) {
     if (!widget.showGeolocationPrompt) return const SizedBox();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (vm.errorMsg != null && context.mounted) {
-        AppFlushBar.showInfo(context, message: vm.errorMsg!);
-      }
-    });
 
     if (vm.positionLoading) {
       return Column(
@@ -134,14 +147,18 @@ class _SearchViewState extends State<SearchView> {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: vm.searchResponse!.stops.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: vm.searchResponse!.stops.length,
       itemBuilder: (context, index) {
         final stop = vm.searchResponse!.stops[index];
-        final buses = stop.bus;
+        final previousStop = index > 0
+            ? vm.searchResponse!.stops[index - 1]
+            : null;
+        final isNewZone = stop.zone != previousStop?.zone;
 
+        final buses = stop.bus;
         final busName = (buses != null && buses.isNotEmpty)
             ? buses.first.name
             : null;
@@ -149,63 +166,76 @@ class _SearchViewState extends State<SearchView> {
         if (busName == null) return SizedBox.shrink();
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(8),
-            onTap: () => widget.onPlaceTap(
-              Place(name: stop.name, city: '', lat: stop.lat, lon: stop.lon),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.componentBg,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isNewZone) ...[
+                if (index != 0) const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 4,
+                  ),
+                  child: Text(
+                    stop.zone ?? 'Zone inconnue',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+              ],
+              InkWell(
+                onTap: () =>
+                    widget.onBusStopTap(vm.searchResponse!.stops[index]),
                 borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  _buildIcon(),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.componentBg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        Text(
-                          stop.name,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: AppColors.secondaryMain,
-                                fontWeight: FontWeight.w500,
-                              ),
-                          overflow: TextOverflow.ellipsis,
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryMain.withAlpha(25),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.place,
+                            color: AppColors.primaryMain,
+                            size: 20,
+                          ),
                         ),
-
-                        Text(
-                          busName,
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(color: AppColors.grey70),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            stop.name,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.secondaryMain,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: AppColors.grey70,
+                          size: 20,
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.chevron_right, color: AppColors.grey70),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+            ],
           ),
         );
       },
-    );
-  }
-
-  Widget _buildIcon() {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.primaryMain.withAlpha(25),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(Icons.place, color: AppColors.primaryMain, size: 20),
     );
   }
 }

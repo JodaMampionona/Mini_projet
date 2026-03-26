@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class BusListView extends StatefulWidget {
   final Function(Bus bus) onBusTap;
-  final Function(Stop stop) onStopTap;
+  final Function(BusStop stop) onStopTap;
 
   const BusListView({
     super.key,

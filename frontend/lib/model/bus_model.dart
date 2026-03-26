@@ -4,7 +4,7 @@ import 'package:frontend/utils/dio_util.dart';
 class Bus {
   final int id;
   final String name;
-  final List<Stop> stops;
+  final List<BusStop> stops;
 
   const Bus({required this.id, required this.name, required this.stops});
 
@@ -15,9 +15,9 @@ class Bus {
       id: json['id'] as int,
       name: json['name'] as String,
       stops: itinerary == null || itinerary[0] == null
-          ? <Stop>[]
+          ? <BusStop>[]
           : (itinerary as List<dynamic>)
-                .map((e) => Stop.fromJson(e as Map<String, dynamic>))
+                .map((e) => BusStop.fromJson(e as Map<String, dynamic>))
                 .toList(),
     );
   }

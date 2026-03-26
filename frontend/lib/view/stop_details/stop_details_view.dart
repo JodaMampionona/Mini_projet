@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class StopDetailsView extends StatefulWidget {
-  final Stop stop;
+  final BusStop stop;
   final Function(Bus bus) onBusTap;
 
   const StopDetailsView({
