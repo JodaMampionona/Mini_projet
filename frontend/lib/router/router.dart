@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/provider/session_state_provider.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';

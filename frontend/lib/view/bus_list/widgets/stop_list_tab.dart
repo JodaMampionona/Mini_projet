@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/viewmodel/bus_list_viewmodel.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 

@@ -97,7 +97,7 @@ class BusStop {
   };
 }
 
-class StopModel {
+class BusStopModel {
   Future<SearchResponse?> getStopsByPlaceName(String query) async {
     final response = await dio.get('/itinerary/search?q=$query');
     return SearchResponse.fromJson(response.data as Map<String, dynamic>);

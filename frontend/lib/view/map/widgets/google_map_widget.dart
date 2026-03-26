@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/itinerary_model.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapWidget extends StatefulWidget {
@@ -12,6 +12,7 @@ class GoogleMapWidget extends StatefulWidget {
   final List<Itinerary> itinerary;
   final bool compassEnabled;
   final bool showIntermediateStops;
+  final bool traceBusStops;
 
   const GoogleMapWidget({
     super.key,
@@ -19,6 +20,7 @@ class GoogleMapWidget extends StatefulWidget {
     required this.compassEnabled,
     required this.showIntermediateStops,
     this.stops,
+    this.traceBusStops = false,
   });
 
   @override
@@ -55,7 +57,10 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final itineraryPolylines = _getPolylines(widget.itinerary);
+    final itineraryPolylines = _getPolylines(
+      widget.itinerary,
+      traceStops: widget.traceBusStops,
+    );
     final markers = _getMarkers(widget.itinerary, widget.showIntermediateStops);
 
     return GoogleMap(
@@ -123,16 +128,26 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   }
 
   // Création de la polyline
-  Set<Polyline> _getPolylines(List<Itinerary> itinerary) {
+  Set<Polyline> _getPolylines(
+    List<Itinerary> itinerary, {
+    bool traceStops = false,
+  }) {
     if (itinerary.isEmpty) return {};
 
     final List<LatLng> polylinePoints = [];
 
     for (final segment in itinerary) {
-      polylinePoints.add(LatLng(segment.startLat, segment.startLon));
+      print('hi');
+      print(segment.busStops);
+      if (traceStops && segment.busStops.isNotEmpty) {
+        for (final stop in segment.busStops) {
+          polylinePoints.add(LatLng(stop.lat, stop.lon));
+        }
+      } else {
+        polylinePoints.add(LatLng(segment.startLat, segment.startLon));
+      }
     }
 
-    // pour le dernier segment, ajouter son endLat/endLon
     final last = itinerary.last;
     polylinePoints.add(LatLng(last.endLat, last.endLon));
 

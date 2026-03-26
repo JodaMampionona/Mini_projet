@@ -1,5 +1,5 @@
 import 'package:frontend/model/place_model.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/utils/dio_util.dart';
 
 class Itinerary {
@@ -10,6 +10,7 @@ class Itinerary {
   final double startLon;
   final double endLat;
   final double endLon;
+  final List<BusStop> busStops;
 
   Itinerary({
     required this.bus,
@@ -19,6 +20,7 @@ class Itinerary {
     required this.startLon,
     required this.endLat,
     required this.endLon,
+    required this.busStops,
   });
 
   factory Itinerary.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,9 @@ class Itinerary {
       startLon: json['start_lon'],
       endLat: json['end_lat'],
       endLon: json['end_lon'],
+      busStops: (json['bus_stops'] as List)
+          .map((bs) => BusStop.fromJson(bs))
+          .toList(),
     );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/bus_model.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 
 class BusListViewModel extends ChangeNotifier {
   final busModel = BusModel();
-  final stopModel = StopModel();
+  final stopModel = BusStopModel();
 
   bool isBusTabActive = true;
   final searchController = TextEditingController();

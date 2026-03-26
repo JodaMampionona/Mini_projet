@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/history_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 
 class MapViewModel extends ChangeNotifier {
   final itineraryModel = ItineraryModel();

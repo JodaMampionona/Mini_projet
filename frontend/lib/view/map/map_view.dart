@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
@@ -71,6 +71,7 @@ class _MapViewState extends State<MapView> {
                           itinerary: vm.itinerary,
                           compassEnabled: true,
                           showIntermediateStops: true,
+                          traceBusStops: true,
                         ),
                   // bottom link
                   vm.loading

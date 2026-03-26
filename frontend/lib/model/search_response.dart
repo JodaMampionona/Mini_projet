@@ -1,4 +1,4 @@
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 
 class SearchResponse {
   final String placeName;

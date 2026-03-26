@@ -113,3 +113,18 @@ class BusStopLinkDAO(DAOInterface):
                 (bus_stop_link_id,)
             )
         conn.commit()
+
+    def get_stops_by_bus_id(self, bus_id: int):
+        with self.helper.get_connection().cursor() as cursor:
+            cursor.execute("""
+                SELECT s.id, s.name, s.lat, s.lon, links.rank
+                FROM bus_stop_links links
+                JOIN bus_stops s ON links.stop_id = s.id
+                WHERE links.bus_id = %s
+                ORDER BY links.rank;
+            """, (bus_id,))
+            rows = cursor.fetchall()
+            return [
+                BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3])
+                for row in rows
+            ]

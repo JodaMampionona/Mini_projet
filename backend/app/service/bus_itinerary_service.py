@@ -137,7 +137,24 @@ class BusItineraryService:
         bus_map = {b.id: b.name for b in buses}
         stop_map = {s.id: s for s in stops}
 
+        # Obtenir tous les stops pour chaque bus
+        bus_stops_map = {}
+        for bus_id in bus_ids:
+            bus_stops_map[bus_id] = self.linkRepo.get_stops_by_bus_id(bus_id)
+
         for bus_id, s_id, e_id in itinerary:
+            all_stops = bus_stops_map[bus_id]
+            # Trouver les indices
+            start_idx = next(i for i, stop in enumerate(all_stops) if stop.id == s_id)
+            end_idx = next(i for i, stop in enumerate(all_stops) if stop.id == e_id)
+            # Les stops intermédiaires incluant start et end (ordre sens de déplacement)
+            if start_idx <= end_idx:
+                intermediate_stops = all_stops[start_idx:end_idx + 1]
+            else:
+                intermediate_stops = list(reversed(all_stops[end_idx:start_idx + 1]))
+
+            bus_stops = [{"id": s.id, "name": s.name, "lat": s.lat, "lon": s.lon} for s in intermediate_stops]
+
             itinerary_named.append({
                 "bus": bus_map[bus_id],
                 "from": stop_map[s_id].name,
@@ -145,7 +162,8 @@ class BusItineraryService:
                 "start_lat": stop_map[s_id].lat,
                 "start_lon": stop_map[s_id].lon,
                 "end_lat": stop_map[e_id].lat,
-                "end_lon": stop_map[e_id].lon
+                "end_lon": stop_map[e_id].lon,
+                "bus_stops": bus_stops
             })
         return itinerary_named
 

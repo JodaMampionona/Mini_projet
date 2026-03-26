@@ -113,6 +113,7 @@ class _BusDetailsViewState extends State<BusDetailsView> {
                                 startLon: stop.lon,
                                 endLat: stop.lat,
                                 endLon: stop.lon,
+                                busStops: [],
                               ),
                             )
                             .toList()

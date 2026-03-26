@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/bus_model.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/view/bus_list/widgets/bus_list_tab.dart';
 import 'package:frontend/view/bus_list/widgets/stop_list_tab.dart';
 import 'package:frontend/viewmodel/bus_list_viewmodel.dart';

@@ -1,4 +1,4 @@
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/utils/dio_util.dart';
 
 class Bus {

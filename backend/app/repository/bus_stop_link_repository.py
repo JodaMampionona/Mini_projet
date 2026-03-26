@@ -20,3 +20,5 @@ class BusStopLinkRepository:
     def update(self, link: BusStopLink): return self.dao.update(link)
 
     def delete(self, bus_stop_link_id: int): return self.dao.delete(bus_stop_link_id)
+
+    def get_stops_by_bus_id(self, bus_id: int): return self.dao.get_stops_by_bus_id(bus_id)

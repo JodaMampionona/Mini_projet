@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/widgets/app_flushbar.dart';
 import 'package:frontend/widgets/app_text_field.dart';

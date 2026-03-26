@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/model/search_response.dart';
-import 'package:frontend/model/stop_model.dart';
+import 'package:frontend/model/bus_stop_model.dart';
 
 class SearchViewModel extends ChangeNotifier {
-  final stopModel = StopModel();
+  final stopModel = BusStopModel();
 
   SearchResponse? _searchResponse;
 
