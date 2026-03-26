@@ -100,6 +100,9 @@ class BusStop {
 class BusStopModel {
   Future<SearchResponse?> getStopsByPlaceName(String query) async {
     final response = await dio.get('/itinerary/search?q=$query');
+    if (response.statusCode == 404) {
+      return SearchResponse.empty();
+    }
     return SearchResponse.fromJson(response.data as Map<String, dynamic>);
   }
 

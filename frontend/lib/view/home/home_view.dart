@@ -59,14 +59,15 @@ class _HomeViewState extends State<HomeView> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
             child: Column(
-              spacing: 4,
+              spacing: 8,
               children: [
                 Text(
-                  vm.isFirstTime ? 'Bienvenue' : 'Re-bienvenue',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  "Planifiez votre trajet",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(height: 1),
                 ),
                 Text(
-                  'Trouvez votre itinéraire.',
+                  "Entrez votre destination pour commencer.",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],

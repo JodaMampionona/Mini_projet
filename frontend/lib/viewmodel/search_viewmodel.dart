@@ -34,13 +34,16 @@ class SearchViewModel extends ChangeNotifier {
     safeNotifyListeners();
 
     try {
+      errorMsg = null;
       SearchResponse? result = await stopModel.getStopsByPlaceName(query);
       if (result != null) {
         _searchResponse = result.copyWith(stops: _unique(result.stops));
+        if (_searchResponse!.stops.isEmpty) {
+          errorMsg = "Nous n'avons trouvé aucun arrêt correspondant.";
+        }
       }
-      errorMsg = null;
     } catch (e) {
-      errorMsg = "Connexion internet instable.";
+      debugPrint(e.toString());
     } finally {
       loading = false;
       safeNotifyListeners();

@@ -3,6 +3,7 @@ import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/view/itinerary/widgets/itinerary_card.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
+import 'package:frontend/widgets/app_action_chip.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,9 @@ class _ItineraryViewState extends State<ItineraryView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ItineraryViewModel>().setItinerary(widget.itinerary);
+      final vm = context.read<ItineraryViewModel>();
+      vm.setItinerary(widget.itinerary);
+      vm.setCurrentIndex(0);
     });
   }
 
@@ -53,10 +56,7 @@ class _ItineraryViewState extends State<ItineraryView> {
                     horizontal: 16,
                     vertical: 8,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [_buildInfo(vm)],
-                  ),
+                  child: _buildInfo(vm),
                 ),
 
                 Divider(
@@ -76,12 +76,22 @@ class _ItineraryViewState extends State<ItineraryView> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
 
-                      _infoChip(
+                      AppActionChip(
                         icon: Icons.check_circle,
-                        label: Text(
-                          "${vm.currentIndex}/${vm.itinerary.length} bus",
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.successText),
+                        label: RichText(
+                          text: TextSpan(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.successText),
+                            children: [
+                              TextSpan(
+                                text: "${vm.currentIndex}",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              TextSpan(text: "/${vm.itinerary.length} bus"),
+                            ],
+                          ),
                         ),
                         bgColor: AppColors.successBg,
                         iconColor: vm.currentIndex == vm.itinerary.length
@@ -187,50 +197,27 @@ class _ItineraryViewState extends State<ItineraryView> {
     );
   }
 
-  Widget _infoChip({
-    required IconData icon,
-    required Widget label,
-    Color bgColor = AppColors.primaryTint50,
-    Color iconColor = AppColors.secondaryMain,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: bgColor,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: iconColor),
-          const SizedBox(width: 4),
-          label,
-        ],
-      ),
-    );
-  }
-
   Widget _buildInfo(ItineraryViewModel vm) {
     return Row(
       spacing: 16,
       children: [
-        _infoChip(
+        AppActionChip(
           icon: Icons.route,
           label: Text(
             "${vm.distance.toStringAsFixed(2).toString()} km",
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.secondaryMain),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.secondaryShade100,
+            ),
           ),
         ),
 
-        _infoChip(
+        AppActionChip(
           icon: Icons.access_time_filled,
           label: Text(
             vm.durationFormatted,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.secondaryMain),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.secondaryShade100,
+            ),
           ),
         ),
       ],

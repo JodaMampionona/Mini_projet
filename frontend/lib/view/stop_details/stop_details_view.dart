@@ -4,6 +4,7 @@ import 'package:frontend/model/bus_model.dart';
 import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/viewmodel/stop_details_viewmodel.dart';
+import 'package:frontend/widgets/app_action_chip.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -190,14 +191,18 @@ class _StopDetailsViewState extends State<StopDetailsView> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: vm.stop!.bus!
-                  .map(
-                    (bus) => ActionChip(
-                      label: Text(bus.name),
-                      onPressed: () => widget.onBusTap(bus),
+              runSpacing: 8,
+              children: vm.stop!.bus!.map((bus) {
+                return AppActionChip(
+                  label: Text(
+                    bus.name,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.secondaryShade100,
                     ),
-                  )
-                  .toList(),
+                  ),
+                  onPressed: () => widget.onBusTap(bus),
+                );
+              }).toList(),
             ),
           ] else ...[
             const Text(

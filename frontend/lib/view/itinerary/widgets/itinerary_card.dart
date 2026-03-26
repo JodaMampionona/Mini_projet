@@ -20,10 +20,10 @@ class ItineraryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       color: AppColors.componentBg,
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         onTap: onContainerTap,
         child: Padding(
           padding: const EdgeInsets.all(16),

@@ -24,6 +24,10 @@ class SearchResponse {
     );
   }
 
+  factory SearchResponse.empty() {
+    return SearchResponse(placeName: "", lat: 0, lon: 0, stops: []);
+  }
+
   SearchResponse copyWith({
     int? distance,
     String? placeName,
