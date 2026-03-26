@@ -28,3 +28,5 @@ class BusStopRepository:
         self, bus_id: int): return self.dao.get_first_stop(bus_id)
 
     def get_last_stop(self, bus_id: int): return self.dao.get_last_stop(bus_id)
+
+    def search(self, query: str): return self.dao.search(query)

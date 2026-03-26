@@ -23,12 +23,13 @@ class BusStopDAO(DAOInterface):
 
     def get_all(self):
         with self.helper.get_connection().cursor() as cursor:
-            cursor.execute("SELECT id, name, lat, lon, zone FROM bus_stops;")
+            """ TODO : order by zone ? """
+            cursor.execute("SELECT id, name, lat, lon, zone FROM bus_stops ORDER BY zone;")
             rows = cursor.fetchall()
             bus_stops = []
             for row in rows:
                 stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
-                stop.buses = self.get_buses_for_stop(stop.id)
+                stop.bus = self.get_buses_for_stop(stop.id)
                 bus_stops.append(stop)
             return bus_stops
 
@@ -43,7 +44,7 @@ class BusStopDAO(DAOInterface):
             bus_stops = []
             for row in rows:
                 stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
-                stop.buses = self.get_buses_for_stop(stop.id)
+                stop.bus = self.get_buses_for_stop(stop.id)
                 bus_stops.append(stop)
             return bus_stops
 
@@ -59,7 +60,7 @@ class BusStopDAO(DAOInterface):
             row = cursor.fetchone()
             if row:
                 stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
-                stop.buses = self.get_buses_for_stop(stop.id)
+                stop.bus = self.get_buses_for_stop(stop.id)
                 return stop
             return None
 
@@ -74,7 +75,7 @@ class BusStopDAO(DAOInterface):
             bus_stops = []
             for row in rows:
                 stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
-                stop.buses = self.get_buses_for_stop(stop.id)
+                stop.bus = self.get_buses_for_stop(stop.id)
                 bus_stops.append(stop)
             return bus_stops
 
@@ -86,7 +87,7 @@ class BusStopDAO(DAOInterface):
             row = cursor.fetchone()
             if row:
                 stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
-                stop.buses = self.get_buses_for_stop(stop.id)
+                stop.bus = self.get_buses_for_stop(stop.id)
                 return stop
             return None
 
@@ -98,10 +99,25 @@ class BusStopDAO(DAOInterface):
             row = cursor.fetchone()
             if row:
                 stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
-                stop.buses = self.get_buses_for_stop(stop.id)
+                stop.bus = self.get_buses_for_stop(stop.id)
                 return stop
             return None
 
+    def search(self, query: str):
+        """Cherche les arrêts par zone ou nom."""
+        with self.helper.get_connection().cursor() as cursor:
+            cursor.execute("""
+                SELECT id, name, lat, lon, zone FROM bus_stops
+                WHERE zone ILIKE %s OR name ILIKE %s
+                ORDER BY zone, name;
+            """, (f"%{query}%", f"%{query}%"))
+            rows = cursor.fetchall()
+            bus_stops = []
+            for row in rows:
+                stop = BusStop(id=row[0], name=row[1], lat=row[2], lon=row[3], zone=row[4])
+                stop.bus = self.get_buses_for_stop(stop.id)
+                bus_stops.append(stop)
+            return bus_stops
 
     # TODO: do not insert ID
     def add(self, stop: BusStop):
@@ -129,3 +145,4 @@ class BusStopDAO(DAOInterface):
         with conn.cursor() as cursor:
             cursor.execute("DELETE FROM bus_stops WHERE id=%s;", (stop_id,))
         conn.commit()
+

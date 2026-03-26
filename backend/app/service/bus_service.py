@@ -32,7 +32,7 @@ class BusService:
                 "name": link.stop.name,
                 "lat": link.stop.lat,
                 "lon": link.stop.lon,
-                "order": link.rank
+                "rank": link.rank
             })
 
         return {

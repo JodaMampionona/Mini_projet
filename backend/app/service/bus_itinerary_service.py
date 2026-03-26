@@ -172,7 +172,7 @@ class BusItineraryService:
                 nearby_stops.append({
                     "id": stop.id,
                     "name": stop.name,
-                    "bus": self.busRepo.get_by_stop_id(stop.id),
+                    "bus": [self.busRepo.get_by_stop_id(stop.id)],
                     "lat": stop.lat,
                     "lon": stop.lon,
                     "distance": round(dist * 1000)
@@ -207,12 +207,13 @@ class BusItineraryService:
             nearby_stops = []
 
             for stop in all_stops:
+                bus = self.busRepo.get_by_stop_id(stop.id)
                 dist = self.haversine_distance(lat, lon, stop.lat, stop.lon)
                 if dist <= radius_km:
                     nearby_stops.append({
                         "id": stop.id,
                         "name": stop.name,
-                        "bus": self.busRepo.get_by_stop_id(stop.id),
+                        "bus": [bus] if bus else [],
                         "lat": stop.lat,
                         "lon": stop.lon,
                         "distance_m": round(dist * 1000)
