@@ -3,7 +3,7 @@ import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/model/place_model.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/widgets/app_text_field.dart';
-import 'package:frontend/widgets/error_message.dart';
+import 'package:frontend/widgets/app_flushbar.dart';
 import 'package:provider/provider.dart';
 
 class SearchView extends StatefulWidget {
@@ -49,7 +49,6 @@ class _SearchViewState extends State<SearchView> {
       body: ListView(
         children: [
           SizedBox(height: 8),
-          _buildError(vm),
           _buildGeolocation(vm),
           _buildTitle(context),
           SizedBox(height: 8),
@@ -59,21 +58,14 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  // ---------------- UI SECTIONS ----------------
-
-  Widget _buildError(SearchViewModel vm) {
-    if (vm.errorMsg == null) return const SizedBox();
-
-    return Column(
-      children: [
-        ErrorMessage(message: vm.errorMsg!),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
   Widget _buildGeolocation(SearchViewModel vm) {
     if (!widget.showGeolocationPrompt) return const SizedBox();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (vm.errorMsg != null && context.mounted) {
+        AppFlushBar.showInfo(context, message: vm.errorMsg!);
+      }
+    });
 
     if (vm.positionLoading) {
       return Column(

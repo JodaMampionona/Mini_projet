@@ -48,30 +48,23 @@ class SearchViewModel extends ChangeNotifier {
   Future<void> fetchPlacesByPosition() async {
     try {
       final position = await _getCurrentLocation();
+      positionLoading = true;
+      safeNotifyListeners();
+
       if (position != null) {
         searchResponse = await stopModel.getStopsNearPlace(position);
       }
     } catch (e) {
-      errorMsg = 'Impossible de récupérer les arrêts proches de vous.';
+      errorMsg =
+          'Impossible de récupérer les arrêts proches de votre position.\nActivez la localisation de votre téléphone et vérifiez votre connexion internet';
     } finally {
+      positionLoading = false;
       safeNotifyListeners();
     }
   }
 
   Future<Place?> _getCurrentLocation() async {
-    try {
-      positionLoading = true;
-      errorMsg = null;
-      safeNotifyListeners();
-      return await PlaceModel.getCurrentLocation();
-    } catch (e) {
-      errorMsg = "Impossible de récupérer les arrêts proches de vous.";
-      safeNotifyListeners();
-    } finally {
-      positionLoading = false;
-      safeNotifyListeners();
-    }
-    return null;
+    return await PlaceModel.getCurrentLocation();
   }
 
   void requestInputFocus() {

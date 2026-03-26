@@ -43,6 +43,7 @@ dependencies:
   google_maps_flutter: ^2.14.0
   material_symbols_icons: ^4.2892.0
   geolocator: ^14.0.2
+  another_flushbar: ^1.12.32
 
 dev_dependencies:
   flutter_test:
