@@ -59,7 +59,7 @@ class SearchViewModel extends ChangeNotifier {
       errorMsg = null;
     } catch (e) {
       errorMsg =
-          'Impossible de récupérer les arrêts proches de votre position.\nActivez la localisation de votre téléphone et vérifiez votre connexion internet';
+          'Impossible de récupérer les arrêts proches de votre position.\nActivez la localisation ou vérifiez votre connexion internet.';
     } finally {
       positionLoading = false;
       safeNotifyListeners();

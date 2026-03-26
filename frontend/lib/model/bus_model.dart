@@ -14,7 +14,7 @@ class Bus {
     return Bus(
       id: json['id'] as int,
       name: json['name'] as String,
-      stops: itinerary == null || itinerary[0] == null
+      stops: itinerary == null || itinerary.isEmpty || itinerary[0] == null
           ? <BusStop>[]
           : (itinerary as List<dynamic>)
                 .map((e) => BusStop.fromJson(e as Map<String, dynamic>))

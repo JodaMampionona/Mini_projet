@@ -35,6 +35,9 @@ class _MapViewState extends State<MapView> {
   void initState() {
     final vm = context.read<MapViewModel>();
 
+    vm.updateStart(widget.start);
+    vm.updateEnd(widget.end);
+
     if (widget.start != null && widget.end != null) {
       vm.getItinerary();
     }

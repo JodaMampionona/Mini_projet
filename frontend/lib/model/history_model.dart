@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/model/bus_stop_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryEntry {
   final DateTime searchedAt;
@@ -36,20 +35,20 @@ class HistoryModel {
   static const String key = "history_entries";
   static const int maxEntries = 50;
 
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
   Future<List<HistoryEntry>> loadHistory() async {
-    final instance = await SharedPreferences.getInstance();
-    final List<String>? stored = instance.getStringList(key);
+    final storedString = await _storage.read(key: key);
+    if (storedString == null) return [];
 
-    if (stored == null) return [];
-
+    final List<dynamic> jsonList = jsonDecode(storedString) as List<dynamic>;
     final List<HistoryEntry> history = [];
 
-    for (final item in stored) {
+    for (final item in jsonList) {
       try {
-        final json = jsonDecode(item) as Map<String, dynamic>;
-        history.add(HistoryEntry.fromJson(json));
+        history.add(HistoryEntry.fromJson(item as Map<String, dynamic>));
       } catch (_) {
-        debugPrint('error decoding history from shared pref');
+        debugPrint('error decoding history from secure storage');
       }
     }
 
@@ -57,19 +56,10 @@ class HistoryModel {
   }
 
   Future<void> add(HistoryEntry entry) async {
-    final instance = await SharedPreferences.getInstance();
-    final List<String> stored = instance.getStringList(key) ?? [];
-
-    final List<HistoryEntry> history = stored
-        .map(
-          (e) => HistoryEntry.fromJson(jsonDecode(e) as Map<String, dynamic>),
-        )
-        .toList();
+    final history = await loadHistory();
 
     history.removeWhere(
-      (e) =>
-          e.start.name == entry.start.name &&
-          e.end.name == entry.end.name,
+      (e) => e.start.name == entry.start.name && e.end.name == entry.end.name,
     );
 
     history.insert(0, entry);
@@ -78,19 +68,12 @@ class HistoryModel {
       history.removeLast();
     }
 
-    final encoded = history.map((e) => jsonEncode(e.toJson())).toList();
-    await instance.setStringList(key, encoded);
+    final encoded = jsonEncode(history.map((e) => e.toJson()).toList());
+    await _storage.write(key: key, value: encoded);
   }
 
   Future<void> delete(HistoryEntry entry) async {
-    final instance = await SharedPreferences.getInstance();
-    final List<String> stored = instance.getStringList(key) ?? [];
-
-    final List<HistoryEntry> history = stored
-        .map(
-          (e) => HistoryEntry.fromJson(jsonDecode(e) as Map<String, dynamic>),
-        )
-        .toList();
+    final history = await loadHistory();
 
     history.removeWhere(
       (e) =>
@@ -99,12 +82,11 @@ class HistoryModel {
           e.searchedAt == entry.searchedAt,
     );
 
-    final encoded = history.map((e) => jsonEncode(e.toJson())).toList();
-    await instance.setStringList(key, encoded);
+    final encoded = jsonEncode(history.map((e) => e.toJson()).toList());
+    await _storage.write(key: key, value: encoded);
   }
 
   Future<void> clearHistory() async {
-    final instance = await SharedPreferences.getInstance();
-    await instance.remove(key);
+    await _storage.delete(key: key);
   }
 }

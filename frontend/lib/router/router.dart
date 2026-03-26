@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/model/bus_model.dart';
-import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/bus_stop_model.dart';
+import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/provider/session_state_provider.dart';
 import 'package:frontend/router/bottom_nav_util.dart';
 import 'package:frontend/router/routes.dart';
@@ -17,7 +17,6 @@ import 'package:frontend/viewmodel/bus_details_viewmodel.dart';
 import 'package:frontend/viewmodel/bus_list_viewmodel.dart';
 import 'package:frontend/viewmodel/history_viewmodel.dart';
 import 'package:frontend/viewmodel/home_viewmodel.dart';
-import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:frontend/viewmodel/map_viewmodel.dart';
 import 'package:frontend/viewmodel/search_viewmodel.dart';
 import 'package:frontend/viewmodel/stop_details_viewmodel.dart';
@@ -104,13 +103,10 @@ final appRouter = GoRouter(
         final extraData = state.extra as Map<String, List<Itinerary>?>?;
         final itinerary = extraData?['itinerary'] ?? [];
 
-        return ChangeNotifierProvider(
-          create: (_) => ItineraryViewModel(),
-          child: ItineraryView(
-            itinerary: itinerary,
-            onBackPress: (context) => context.pop(),
-            onNewItineraryTap: (context) => context.goNamed(Routes.map.name),
-          ),
+        return ItineraryView(
+          itinerary: itinerary,
+          onBackPress: (context) => context.pop(),
+          onNewItineraryTap: (context) => context.goNamed(Routes.map.name),
         );
       },
     ),

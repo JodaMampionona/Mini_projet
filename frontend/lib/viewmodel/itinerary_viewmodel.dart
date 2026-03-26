@@ -1,34 +1,30 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:frontend/model/history_model.dart';
 import 'package:frontend/model/itinerary_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ItineraryViewModel extends ChangeNotifier {
   final itineraryModel = ItineraryModel();
-  final historyModel = HistoryModel();
 
   List<Itinerary> itinerary = [];
   double? _distance;
+  int _currentIndex = 0;
 
-  double _euclideanDistance(LatLng p1, LatLng p2) {
-    const double kx = 111.32;
-    const double ky = 110.57;
-
-    final dx = (p2.longitude - p1.longitude) * kx;
-    final dy = (p2.latitude - p1.latitude) * ky;
-
-    return sqrt(dx * dx + dy * dy);
+  void setCurrentIndex(int index) {
+    _currentIndex = index;
+    notifyListeners();
   }
 
-  double get distance {
-    if (_distance != null) return _distance!;
+  int get currentIndex => _currentIndex;
 
+  double get distance {
     double totalDistance = 0;
     LatLng? previous;
 
-    for (final segment in itinerary) {
+    for (int i = _currentIndex; i < itinerary.length; i++) {
+      final segment = itinerary[i];
+
       if (segment.busStops.isNotEmpty) {
         for (final stop in segment.busStops) {
           final current = LatLng(stop.lat, stop.lon);
@@ -57,17 +53,28 @@ class ItineraryViewModel extends ChangeNotifier {
     return _distance!;
   }
 
+  double _euclideanDistance(LatLng p1, LatLng p2) {
+    const double kx = 111.32;
+    const double ky = 110.57;
+
+    final dx = (p2.longitude - p1.longitude) * kx;
+    final dy = (p2.latitude - p1.latitude) * ky;
+
+    return sqrt(dx * dx + dy * dy);
+  }
+
   int get durationInSeconds {
     double totalDistanceKm = distance;
 
+    // TODO : change speed ?
     const double busSpeedKmH = 25;
     const int stopDelaySeconds = 30;
 
     double travelTimeSeconds = (totalDistanceKm / busSpeedKmH) * 3600;
 
     int totalStops = 0;
-    for (final segment in itinerary) {
-      totalStops += segment.busStops.length;
+    for (int i = currentIndex; i < itinerary.length; i++) {
+      totalStops += itinerary[i].busStops.length;
     }
 
     final totalTime = travelTimeSeconds + (totalStops * stopDelaySeconds);
