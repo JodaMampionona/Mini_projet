@@ -98,6 +98,9 @@ class _BusListViewState extends State<BusListView>
           labelColor: AppColors.secondaryShade100,
           unselectedLabelColor: AppColors.grey40,
           labelStyle: Theme.of(context).textTheme.bodyMedium,
+          overlayColor: WidgetStatePropertyAll(
+            AppColors.primaryMain.withAlpha(25),
+          ),
           tabs: const [
             Tab(
               child: Row(

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/constants/app_assets.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/model/itinerary_model.dart';
 import 'package:frontend/model/bus_stop_model.dart';
+import 'package:frontend/model/itinerary_model.dart';
+import 'package:frontend/services/marker_icon_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapWidget extends StatefulWidget {
@@ -28,10 +28,6 @@ class GoogleMapWidget extends StatefulWidget {
 }
 
 class GoogleMapWidgetState extends State<GoogleMapWidget> {
-  BitmapDescriptor? startMarkerIcon;
-  BitmapDescriptor? endMarkerIcon;
-  BitmapDescriptor? transferMarker;
-
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   late final ClusterManager _myCluster;
@@ -39,7 +35,6 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   void initState() {
     super.initState();
-    _loadMarkerIcon();
 
     _myCluster = ClusterManager(
       clusterManagerId: ClusterManagerId('my cluster'),
@@ -111,22 +106,6 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     );
   }
 
-  Future<void> _loadMarkerIcon() async {
-    startMarkerIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(28, 28)),
-      AppImages.startMarker,
-    );
-    endMarkerIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(28, 28)),
-      AppImages.endMarker,
-    );
-    transferMarker = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(28, 28)),
-      AppImages.transferMarker,
-    );
-    setState(() {});
-  }
-
   // Création de la polyline
   Set<Polyline> _getPolylines(
     List<Itinerary> itinerary, {
@@ -171,17 +150,10 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('start_${s.lat}_${s.lon}'),
             position: LatLng(s.lat, s.lon),
             infoWindow: InfoWindow(title: s.name),
-            icon: startMarkerIcon!,
+            icon: MarkerIconService.startMarkerIcon!,
           ),
         );
       }
-    }
-
-    if (itinerary.isEmpty ||
-        startMarkerIcon == null ||
-        endMarkerIcon == null ||
-        transferMarker == null) {
-      return markers;
     }
 
     for (int i = 0; i < itinerary.length; i++) {
@@ -195,7 +167,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('start_$i'),
             position: LatLng(point.startLat, point.startLon),
             infoWindow: InfoWindow(title: point.from),
-            icon: startMarkerIcon!,
+            icon: MarkerIconService.startMarkerIcon!,
           ),
         );
       }
@@ -208,7 +180,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('transfer_$i'),
             position: LatLng(point.startLat, point.startLon),
             infoWindow: InfoWindow(title: point.to),
-            icon: transferMarker!,
+            icon: MarkerIconService.transferMarker!,
             clusterManagerId: _myCluster.clusterManagerId,
           ),
         );
@@ -222,7 +194,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
             markerId: MarkerId('end_$i'),
             position: LatLng(point.endLat, point.endLon),
             infoWindow: InfoWindow(title: point.to),
-            icon: endMarkerIcon!,
+            icon: MarkerIconService.endMarkerIcon!,
           ),
         );
       }

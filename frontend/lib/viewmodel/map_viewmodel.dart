@@ -11,6 +11,7 @@ class MapViewModel extends ChangeNotifier {
   bool loading = false;
   BusStop? start;
   BusStop? end;
+  String? errorMsg;
 
   // controllers
   final TextEditingController startController = TextEditingController();
@@ -62,12 +63,20 @@ class MapViewModel extends ChangeNotifier {
         .then((result) {
           if (result != null) {
             itinerary = result;
+            errorMsg = null;
+          } else {
+            errorMsg =
+                "Nous n'avons pas trouvé d'itinéraire pour le trajet selectionné.";
           }
         })
         .whenComplete(() {
           setLoading(false);
           historyModel.add(historyEntry);
         });
+  }
+
+  void clearError() {
+    errorMsg = null;
   }
 
   @override

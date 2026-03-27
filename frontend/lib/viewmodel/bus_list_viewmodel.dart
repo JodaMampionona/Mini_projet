@@ -106,6 +106,8 @@ class BusListViewModel extends ChangeNotifier {
 
         _currentPage++;
       } while (_currentPage <= _lastPage);
+    } catch (e) {
+      stopErrorMsg = "Impossible de récupérer arrêts.";
     } finally {
       _stopFetchInProgress = false;
       _setStopLoading(false);

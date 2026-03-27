@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/model/bus_stop_model.dart';
 import 'package:frontend/view/map/widgets/google_map_widget.dart';
 import 'package:frontend/view/map/widgets/top_inputs.dart';
+import 'package:frontend/widgets/app_flushbar.dart';
 import 'package:frontend/widgets/custom_icon_button.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +49,13 @@ class _MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MapViewModel>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (vm.errorMsg != null) {
+        AppFlushBar.showInfo(context, message: vm.errorMsg!);
+        vm.clearError();
+      }
+    });
 
     return Scaffold(
       body: SafeArea(

@@ -83,12 +83,18 @@ class _StopDetailsViewState extends State<StopDetailsView> {
       body: Column(
         children: [
           Expanded(
-            child: GoogleMapWidget(
-              showIntermediateStops: false,
-              stops: vm.stop == null ? [] : [vm.stop!],
-              itinerary: [],
-              compassEnabled: false,
-            ),
+            child: vm.loading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryMain,
+                    ),
+                  )
+                : GoogleMapWidget(
+                    showIntermediateStops: false,
+                    stops: vm.stop == null ? [] : [vm.stop!],
+                    itinerary: [],
+                    compassEnabled: false,
+                  ),
           ),
 
           AnimatedSlide(
@@ -148,7 +154,11 @@ class _StopDetailsViewState extends State<StopDetailsView> {
             children: [
               Expanded(
                 child: Text(
-                  vm.stop == null ? 'Arrêt inconnu' : vm.stop!.name,
+                  vm.loading
+                      ? "Chargement..."
+                      : vm.stop == null
+                      ? 'Arrêt inconnu'
+                      : vm.stop!.name,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: vm.stop == null
                         ? AppColors.grey70
@@ -204,7 +214,9 @@ class _StopDetailsViewState extends State<StopDetailsView> {
                 );
               }).toList(),
             ),
-          ] else ...[
+          ] else if (vm.loading)
+            ...[]
+          else ...[
             const Text(
               'Nous n\'avons pas pu récupérer les informations concernant cet arrêt.',
             ),

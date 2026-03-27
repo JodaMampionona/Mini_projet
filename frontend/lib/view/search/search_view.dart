@@ -56,7 +56,7 @@ class _SearchViewState extends State<SearchView> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(),
+        leading: BackButton(),
         scrolledUnderElevation: 0,
         title: AppTextField(
           validator: null,

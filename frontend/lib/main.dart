@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_theme.dart';
 import 'package:frontend/provider/session_state_provider.dart';
 import 'package:frontend/router/router.dart';
+import 'package:frontend/services/marker_icon_service.dart';
 import 'package:frontend/viewmodel/itinerary_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await MarkerIconService.preload();
   runApp(
     MultiProvider(
       providers: [

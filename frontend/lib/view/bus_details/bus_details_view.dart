@@ -100,26 +100,32 @@ class _BusDetailsViewState extends State<BusDetailsView> {
                   : constraints.maxHeight,
               child: Transform.translate(
                 offset: Offset(0, _mapOffset),
-                child: GoogleMapWidget(
-                  showIntermediateStops: true,
-                  itinerary: vm.bus != null
-                      ? vm.bus!.stops
-                            .map(
-                              (stop) => Itinerary(
-                                bus: widget.bus.name,
-                                from: stop.name,
-                                to: stop.name,
-                                startLat: stop.lat,
-                                startLon: stop.lon,
-                                endLat: stop.lat,
-                                endLon: stop.lon,
-                                busStops: [],
-                              ),
-                            )
-                            .toList()
-                      : [],
-                  compassEnabled: false,
-                ),
+                child: vm.loading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryMain,
+                        ),
+                      )
+                    : GoogleMapWidget(
+                        showIntermediateStops: true,
+                        itinerary: vm.bus != null
+                            ? vm.bus!.stops
+                                  .map(
+                                    (stop) => Itinerary(
+                                      bus: widget.bus.name,
+                                      from: stop.name,
+                                      to: stop.name,
+                                      startLat: stop.lat,
+                                      startLon: stop.lon,
+                                      endLat: stop.lat,
+                                      endLon: stop.lon,
+                                      busStops: [],
+                                    ),
+                                  )
+                                  .toList()
+                            : [],
+                        compassEnabled: false,
+                      ),
               ),
             ),
           ),

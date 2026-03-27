@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
 // api
-const apiAuthority = 'http://192.168.1.82:8000';
+const apiAuthority = 'https://accentually-boastless-lora.ngrok-free.dev';
 const apiPrefix = '/';
 
 // http utils
